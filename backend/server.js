@@ -4,6 +4,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
+const jobRoutes = require("./routes/jobRoutes");
 
 // Load env vars
 dotenv.config();
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/jobs", jobRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

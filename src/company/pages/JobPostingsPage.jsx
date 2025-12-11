@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Typography,
     Grid,
@@ -13,14 +13,19 @@ import {
     Chip,
     Button,
     CardContent,
-    Select,
+    CircularProgress,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
     MenuItem,
-    FormControl,
 } from '@mui/material';
 import {
     Add as AddIcon,
-    KeyboardArrowDown as ArrowDownIcon,
 } from '@mui/icons-material';
+import { getMyJobsAPI, createJobAPI, deleteJobAPI, getAllCategoriesAPI } from '../../api/AuthAPI';
+import { toast } from 'react-toastify';
 
 const StatCard = ({ title, value, subtitle }) => (
     <Card sx={{ backgroundColor: '#dbeafe', height: '100%' }}>
@@ -40,129 +45,142 @@ const StatCard = ({ title, value, subtitle }) => (
     </Card>
 );
 
-const jobPostings = [
-    {
-        id: 1,
-        title: 'Senior Software Engineer',
-        datePosted: '2024-11-01',
-        lastPosted: '85 New',
-        applicants: '35 New / 120 Total',
-        status: 'Active',
-    },
-    {
-        id: 2,
-        title: 'Product Manager',
-        datePosted: '2024-10-28',
-        lastPosted: '42 New',
-        applicants: '18 New / 65 Total',
-        status: 'Active',
-    },
-    {
-        id: 3,
-        title: 'UX Designer',
-        datePosted: '2024-10-25',
-        lastPosted: '28 New',
-        applicants: '12 New / 45 Total',
-        status: 'Duplicate',
-    },
-    {
-        id: 4,
-        title: 'Data Analyst',
-        datePosted: '2024-10-20',
-        lastPosted: '15 New',
-        applicants: '8 New / 32 Total',
-        status: 'Active',
-    },
-];
-
 export default function JobPostingsPage() {
+    const [jobs, setJobs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [categories, setCategories] = useState([]);
+    const [formData, setFormData] = useState({
+        title: '',
+        type: 'onsite',
+        location: '',
+        category: '',
+        description: '',
+        requirements: '',
+        skills: '',
+        salary: { min: 0, max: 0, currency: 'USD' },
+        experience: 'any',
+        status: 'active',
+        deadline: '',
+    });
+
+    useEffect(() => {
+        fetchJobs();
+        fetchCategories();
+    }, []);
+
+    const fetchJobs = async () => {
+        try {
+            const data = await getMyJobsAPI();
+            setJobs(data);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching jobs:', error);
+            toast.error('Failed to load jobs');
+            setLoading(false);
+        }
+    };
+
+    const fetchCategories = async () => {
+        try {
+            const data = await getAllCategoriesAPI();
+            setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
+
+    const handleCreateJob = async () => {
+        if (!formData.title || !formData.category || !formData.location || !formData.description) {
+            toast.error('Please fill all required fields');
+            return;
+        }
+
+        try {
+            const jobData = {
+                ...formData,
+                skills: formData.skills ? formData.skills.split(',').map(s => s.trim()) : [],
+            };
+            await createJobAPI(jobData);
+            toast.success('Job created successfully');
+            setDialogOpen(false);
+            setFormData({
+                title: '',
+                type: 'onsite',
+                location: '',
+                category: '',
+                description: '',
+                requirements: '',
+                skills: '',
+                salary: { min: 0, max: 0, currency: 'USD' },
+                experience: 'any',
+                status: 'active',
+                deadline: '',
+            });
+            fetchJobs();
+        } catch (error) {
+            console.error('Error creating job:', error);
+            toast.error(error.message || 'Failed to create job');
+        }
+    };
+
+    const handleDeleteJob = async (jobId, jobTitle) => {
+        if (window.confirm(`Are you sure you want to delete "${jobTitle}"?`)) {
+            try {
+                await deleteJobAPI(jobId);
+                toast.success('Job deleted successfully');
+                fetchJobs();
+            } catch (error) {
+                console.error('Error deleting job:', error);
+                toast.error('Failed to delete job');
+            }
+        }
+    };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleDateString();
+    };
+
+    const activeJobs = jobs.filter(j => j.status === 'active').length;
+    const totalApplicants = jobs.reduce((sum, job) => sum + (job.applicants || 0), 0);
+    const totalViews = jobs.reduce((sum, job) => sum + (job.views || 0), 0);
+
     return (
         <Box>
-            {/* Header with title and action buttons */}
+            {/* Header with title and action button */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                 <Typography variant="h4" sx={{ color: 'text.primary', fontWeight: 600 }}>
                     Manage Job Postings
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        sx={{
-                            backgroundColor: 'primary.main',
-                            px: 3,
-                            '&:hover': {
-                                backgroundColor: 'primary.dark',
-                            },
-                        }}
-                    >
-                        Create a Job
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        startIcon={<AddIcon />}
-                        sx={{
-                            borderColor: 'primary.main',
-                            color: 'primary.main',
-                            px: 3,
-                            '&:hover': {
-                                borderColor: 'primary.dark',
-                                backgroundColor: 'rgba(10, 102, 194, 0.04)',
-                            },
-                        }}
-                    >
-                        Add New Company
-                    </Button>
-                </Box>
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={() => setDialogOpen(true)}
+                    sx={{
+                        backgroundColor: 'primary.main',
+                        px: 3,
+                        '&:hover': {
+                            backgroundColor: 'primary.dark',
+                        },
+                    }}
+                >
+                    Create a Job
+                </Button>
             </Box>
 
             {/* Statistics Cards */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
                 <Grid item xs={12} md={4}>
-                    <StatCard title="Active Jobs" value="5" subtitle="New" />
+                    <StatCard title="Active Jobs" value={activeJobs} subtitle={`${jobs.length} Total`} />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <StatCard title="Total Applicants" value="4" subtitle="Scheduled" />
+                    <StatCard title="Total Applicants" value={totalApplicants} />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <StatCard title="Job Views This Week" value="1,200" subtitle="1,200" />
+                    <StatCard title="Job Views" value={totalViews} />
                 </Grid>
             </Grid>
-
-            {/* Filter/Sort Row */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <FormControl size="small" sx={{ minWidth: 150 }}>
-                    <Select
-                        defaultValue="sort"
-                        sx={{
-                            backgroundColor: 'white',
-                            '& .MuiOutlinedInput-notchedOutline': {
-                                borderColor: '#e5e7eb',
-                            },
-                        }}
-                    >
-                        <MenuItem value="sort">Sort/Filter</MenuItem>
-                        <MenuItem value="date">By Date</MenuItem>
-                        <MenuItem value="applicants">By Applicants</MenuItem>
-                        <MenuItem value="status">By Status</MenuItem>
-                    </Select>
-                </FormControl>
-
-                <FormControl size="small" sx={{ minWidth: 150 }}>
-                    <Select
-                        defaultValue="filter"
-                        sx={{
-                            backgroundColor: 'white',
-                            '& .MuiOutlinedInput-notchedOutline': {
-                                borderColor: '#e5e7eb',
-                            },
-                        }}
-                    >
-                        <MenuItem value="filter">Set New Filter</MenuItem>
-                        <MenuItem value="active">Active Only</MenuItem>
-                        <MenuItem value="all">All Jobs</MenuItem>
-                    </Select>
-                </FormControl>
-            </Box>
 
             {/* Job Postings Table */}
             <Card sx={{ borderRadius: 3 }}>
@@ -171,64 +189,58 @@ export default function JobPostingsPage() {
                         <TableHead>
                             <TableRow sx={{ backgroundColor: '#f9fafb' }}>
                                 <TableCell sx={{ fontWeight: 600, color: 'text.primary' }}>Job Title</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: 'text.primary' }}>Type</TableCell>
                                 <TableCell sx={{ fontWeight: 600, color: 'text.primary' }}>Date Posted</TableCell>
-                                <TableCell sx={{ fontWeight: 600, color: 'text.primary' }}>Last Job Posted</TableCell>
-                                <TableCell sx={{ fontWeight: 600, color: 'text.primary' }}>Total Applicants</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: 'text.primary' }}>Applicants</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: 'text.primary' }}>Views</TableCell>
                                 <TableCell sx={{ fontWeight: 600, color: 'text.primary' }}>Status</TableCell>
                                 <TableCell sx={{ fontWeight: 600, color: 'text.primary' }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {jobPostings.map((job, index) => (
-                                <TableRow
-                                    key={job.id}
-                                    sx={{
-                                        backgroundColor: index % 2 === 0 ? 'white' : '#fafbfc',
-                                        '&:hover': { backgroundColor: '#f3f4f6' },
-                                    }}
-                                >
-                                    <TableCell sx={{ fontWeight: 500 }}>{job.title}</TableCell>
-                                    <TableCell sx={{ color: 'text.secondary' }}>{job.datePosted}</TableCell>
-                                    <TableCell>
-                                        <Box
-                                            component="span"
-                                            sx={{
-                                                color: 'primary.main',
-                                                cursor: 'pointer',
-                                                '&:hover': { textDecoration: 'underline' },
-                                            }}
-                                        >
-                                            {job.lastPosted}
-                                        </Box>
+                            {loading ? (
+                                <TableRow>
+                                    <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
+                                        <CircularProgress />
                                     </TableCell>
-                                    <TableCell>
-                                        <Box
-                                            component="span"
-                                            sx={{
-                                                color: 'primary.main',
-                                                cursor: 'pointer',
-                                                fontWeight: 500,
-                                                '&:hover': { textDecoration: 'underline' },
-                                            }}
-                                        >
-                                            {job.applicants}
-                                        </Box>
+                                </TableRow>
+                            ) : jobs.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
+                                        <Typography variant="body1" color="text.secondary">
+                                            No jobs posted yet. Click "Create a Job" to get started!
+                                        </Typography>
                                     </TableCell>
-                                    <TableCell>
-                                        <Chip
-                                            label={job.status}
-                                            size="small"
-                                            sx={{
-                                                backgroundColor: job.status === 'Active' ? '#d1fae5' : '#fed7aa',
-                                                color: job.status === 'Active' ? '#065f46' : '#92400e',
-                                                fontWeight: 500,
-                                                borderRadius: 2,
-                                            }}
-                                        />
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                                            {job.status === 'Duplicate' && (
+                                </TableRow>
+                            ) : (
+                                jobs.map((job, index) => (
+                                    <TableRow
+                                        key={job._id}
+                                        sx={{
+                                            backgroundColor: index % 2 === 0 ? 'white' : '#fafbfc',
+                                            '&:hover': { backgroundColor: '#f3f4f6' },
+                                        }}
+                                    >
+                                        <TableCell sx={{ fontWeight: 500 }}>{job.title}</TableCell>
+                                        <TableCell sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>{job.type}</TableCell>
+                                        <TableCell sx={{ color: 'text.secondary' }}>{formatDate(job.createdAt)}</TableCell>
+                                        <TableCell sx={{ color: 'primary.main', fontWeight: 500 }}>{job.applicants || 0}</TableCell>
+                                        <TableCell sx={{ color: 'text.secondary' }}>{job.views || 0}</TableCell>
+                                        <TableCell>
+                                            <Chip
+                                                label={job.status}
+                                                size="small"
+                                                sx={{
+                                                    backgroundColor: job.status === 'active' ? '#d1fae5' : '#fed7aa',
+                                                    color: job.status === 'active' ? '#065f46' : '#92400e',
+                                                    fontWeight: 500,
+                                                    borderRadius: 2,
+                                                    textTransform: 'capitalize',
+                                                }}
+                                            />
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                                                 <Button
                                                     size="small"
                                                     variant="outlined"
@@ -239,31 +251,170 @@ export default function JobPostingsPage() {
                                                         color: 'text.secondary',
                                                     }}
                                                 >
-                                                    Edit
+                                                    View
                                                 </Button>
-                                            )}
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                sx={{
-                                                    textTransform: 'none',
-                                                    minWidth: 'auto',
-                                                    backgroundColor: 'primary.main',
-                                                    '&:hover': {
-                                                        backgroundColor: 'primary.dark',
-                                                    },
-                                                }}
-                                            >
-                                                View Applicants
-                                            </Button>
-                                        </Box>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                                <Button
+                                                    size="small"
+                                                    sx={{
+                                                        textTransform: 'none',
+                                                        minWidth: 'auto',
+                                                        color: 'error.main',
+                                                    }}
+                                                    onClick={() => handleDeleteJob(job._id, job.title)}
+                                                >
+                                                    Delete
+                                                </Button>
+                                            </Box>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
                         </TableBody>
                     </Table>
                 </TableContainer>
             </Card>
+
+            {/* Create Job Dialog */}
+            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
+                <DialogTitle>Create New Job</DialogTitle>
+                <DialogContent>
+                    <Box sx={{ pt: 2 }}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Job Title"
+                                    value={formData.title}
+                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    select
+                                    label="Job Type"
+                                    value={formData.type}
+                                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                                >
+                                    <MenuItem value="remote">Remote</MenuItem>
+                                    <MenuItem value="onsite">On-site</MenuItem>
+                                    <MenuItem value="freelance">Freelance</MenuItem>
+                                    <MenuItem value="hybrid">Hybrid</MenuItem>
+                                </TextField>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Location"
+                                    value={formData.location}
+                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    select
+                                    label="Category"
+                                    value={formData.category}
+                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                    required
+                                >
+                                    {categories.map((cat) => (
+                                        <MenuItem key={cat._id} value={cat.name}>{cat.name}</MenuItem>
+                                    ))}
+                                </TextField>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    select
+                                    label="Experience Level"
+                                    value={formData.experience}
+                                    onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+                                >
+                                    <MenuItem value="any">Any</MenuItem>
+                                    <MenuItem value="entry">Entry Level</MenuItem>
+                                    <MenuItem value="mid">Mid Level</MenuItem>
+                                    <MenuItem value="senior">Senior</MenuItem>
+                                    <MenuItem value="lead">Lead</MenuItem>
+                                </TextField>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Description"
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    multiline
+                                    rows={4}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Requirements"
+                                    value={formData.requirements}
+                                    onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
+                                    multiline
+                                    rows={3}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Skills (comma separated)"
+                                    value={formData.skills}
+                                    onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+                                    placeholder="JavaScript, React, Node.js"
+                                />
+                            </Grid>
+                            <Grid item xs={4}>
+                                <TextField
+                                    fullWidth
+                                    type="number"
+                                    label="Min Salary"
+                                    value={formData.salary.min}
+                                    onChange={(e) => setFormData({ ...formData, salary: { ...formData.salary, min: Number(e.target.value) } })}
+                                />
+                            </Grid>
+                            <Grid item xs={4}>
+                                <TextField
+                                    fullWidth
+                                    type="number"
+                                    label="Max Salary"
+                                    value={formData.salary.max}
+                                    onChange={(e) => setFormData({ ...formData, salary: { ...formData.salary, max: Number(e.target.value) } })}
+                                />
+                            </Grid>
+                            <Grid item xs={4}>
+                                <TextField
+                                    fullWidth
+                                    label="Currency"
+                                    value={formData.salary.currency}
+                                    onChange={(e) => setFormData({ ...formData, salary: { ...formData.salary, currency: e.target.value } })}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    type="date"
+                                    label="Application Deadline"
+                                    value={formData.deadline}
+                                    onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={handleCreateJob} variant="contained">Create Job</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }

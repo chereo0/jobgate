@@ -2,6 +2,7 @@ import axios from "axios";
 
 const API_URL = "http://localhost:5000/api/users";
 const CATEGORY_API_URL = "http://localhost:5000/api/categories";
+const JOB_API_URL = "http://localhost:5000/api/jobs";
 
 // Register user
 export const RegisterAPI = async (userData) => {
@@ -233,6 +234,90 @@ export const deleteCategoryAPI = async (categoryId) => {
   try {
     const token = localStorage.getItem("authToken");
     const response = await axios.delete(`${CATEGORY_API_URL}/${categoryId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// ============= Job API Functions =============
+
+// Get all jobs
+export const getAllJobsAPI = async (filters = {}) => {
+  try {
+    const params = new URLSearchParams(filters).toString();
+    const url = params ? `${JOB_API_URL}?${params}` : JOB_API_URL;
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Get job by ID
+export const getJobByIdAPI = async (jobId) => {
+  try {
+    const response = await axios.get(`${JOB_API_URL}/${jobId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Create job (company only)
+export const createJobAPI = async (jobData) => {
+  try {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.post(JOB_API_URL, jobData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Update job (company owner or admin)
+export const updateJobAPI = async (jobId, jobData) => {
+  try {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.put(`${JOB_API_URL}/${jobId}`, jobData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Delete job (company owner or admin)
+export const deleteJobAPI = async (jobId) => {
+  try {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.delete(`${JOB_API_URL}/${jobId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Get my jobs (logged in company)
+export const getMyJobsAPI = async () => {
+  try {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.get(`${JOB_API_URL}/my/jobs`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
