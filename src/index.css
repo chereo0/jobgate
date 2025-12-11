@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-gray-100 text-gray-900 font-['Inter'];
+  }
+}
+
+@layer components {
+  .common-input {
+    @apply h-10 p-2.5 bg-white border border-gray-800 rounded text-gray-900 text-base outline-none focus:border-[#0072b1] w-full;
+  }
+
+  .common-textArea {
+    @apply p-2.5 bg-white border border-gray-800 rounded text-gray-900 text-base outline-none focus:border-[#0072b1] w-full resize-none;
+  }
+
+  .linkedin-btn {
+    @apply bg-[#0073b1] text-white font-semibold rounded-full px-6 py-2 hover:bg-[#004c75] transition-colors cursor-pointer;
+  }
+
+  .linkedin-btn-outline {
+    @apply bg-white text-gray-600 font-semibold rounded-full px-6 py-2 border border-gray-600 hover:bg-gray-100 transition-colors cursor-pointer;
+  }
+}
