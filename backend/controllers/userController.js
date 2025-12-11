@@ -310,6 +310,27 @@ const getCompanyById = async (req, res) => {
     }
 };
 
+// @desc    Get featured companies (random)
+// @route   GET /api/users/featured-companies
+// @access  Public
+const getFeaturedCompanies = async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 6;
+
+        // Get random companies
+        const companies = await User.aggregate([
+            { $match: { role: "company" } },
+            { $sample: { size: limit } },
+            { $project: { password: 0 } }
+        ]);
+
+        res.json(companies);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
@@ -321,4 +342,5 @@ module.exports = {
     deleteUser,
     getAllCompanies,
     getCompanyById,
+    getFeaturedCompanies,
 };

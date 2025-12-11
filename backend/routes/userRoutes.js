@@ -11,12 +11,14 @@ const {
     deleteUser,
     getAllCompanies,
     getCompanyById,
+    getFeaturedCompanies,
 } = require("../controllers/userController");
 const { protect, admin } = require("../middleware/authMiddleware");
 
 // Public routes
 router.post("/register", registerUser);
 router.post("/login", loginUser);
+router.get("/featured-companies", getFeaturedCompanies);
 
 // Protected routes
 router.route("/profile").get(protect, getUserProfile).put(protect, updateUserProfile);

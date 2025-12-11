@@ -14,6 +14,7 @@ import {
     Work as WorkIcon,
     People as PeopleIcon,
     Business as BusinessIcon,
+    Article as ArticleIcon,
 } from '@mui/icons-material';
 
 const drawerWidth = 260;
@@ -21,6 +22,7 @@ const drawerWidth = 260;
 const menuItems = [
     { text: 'Dashboard Home', icon: <DashboardIcon />, path: '/company' },
     { text: 'Job Postings', icon: <WorkIcon />, path: '/company/jobs' },
+    { text: 'Posts', icon: <ArticleIcon />, path: '/company/posts' },
     { text: 'Candidates', icon: <PeopleIcon />, path: '/company/candidates' },
     { text: 'Company Profile', icon: <BusinessIcon />, path: '/company/profile' },
 ];

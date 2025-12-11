@@ -327,3 +327,114 @@ export const getMyJobsAPI = async () => {
     throw error.response?.data || error.message;
   }
 };
+
+// ============= Post API Functions =============
+
+const POST_API_URL = "http://localhost:5000/api/posts";
+
+// Get all posts
+export const getAllPostsAPI = async () => {
+  try {
+    const response = await axios.get(POST_API_URL);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Get my posts
+export const getMyPostsAPI = async () => {
+  try {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.get(`${POST_API_URL}/my/posts`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Create post
+export const createPostAPI = async (postData) => {
+  try {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.post(POST_API_URL, postData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Delete post
+export const deletePostAPI = async (postId) => {
+  try {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.delete(`${POST_API_URL}/${postId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Like/unlike post
+export const likePostAPI = async (postId) => {
+  try {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.post(`${POST_API_URL}/${postId}/like`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Add comment
+export const addCommentAPI = async (postId, text) => {
+  try {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.post(`${POST_API_URL}/${postId}/comment`, { text }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// ============= Home Page API Functions =============
+
+// Get featured companies
+export const getFeaturedCompaniesAPI = async (limit = 6) => {
+  try {
+    const response = await axios.get(`${API_URL}/featured-companies?limit=${limit}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Get posts by company ID
+export const getPostsByCompanyAPI = async (companyId) => {
+  try {
+    const response = await axios.get(`${POST_API_URL}/company/${companyId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
