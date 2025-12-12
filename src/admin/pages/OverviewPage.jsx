@@ -18,24 +18,24 @@ import { getAllUsersAPI, getAllCompanies } from '../../api/AuthAPI';
 import { toast } from 'react-toastify';
 
 const QuickStatCard = ({ title, value, icon, color, loading }) => (
-    <Card sx={{ height: '100%' }}>
+    <Card sx={{ height: '100%', border: '1px solid #E5E7EB' }}>
         <CardContent>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <Box>
-                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    <Typography variant="subtitle2" sx={{ color: '#7A7A7A', textTransform: 'uppercase', fontSize: '0.75rem', fontWeight: 600 }} gutterBottom>
                         {title}
                     </Typography>
                     {loading ? (
-                        <CircularProgress size={24} />
+                        <CircularProgress size={24} sx={{ color: '#2FA4A9' }} />
                     ) : (
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: color || 'primary.main' }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: color || '#2FA4A9' }}>
                             {value}
                         </Typography>
                     )}
                 </Box>
                 <Box
                     sx={{
-                        backgroundColor: `${color || '#0f172a'}15`,
+                        backgroundColor: color ? `${color}15` : '#AEE3E6',
                         borderRadius: 2,
                         p: 1.5,
                         display: 'flex',
@@ -77,7 +77,7 @@ const RecentActivity = ({ activities, loading }) => (
                                 borderBottom: index < activities.length - 1 ? '1px solid #e5e7eb' : 'none',
                             }}
                         >
-                            <CheckCircleIcon sx={{ color: 'success.main', fontSize: '1.2rem' }} />
+                            <CheckCircleIcon sx={{ color: '#2FA4A9', fontSize: '1.2rem' }} />
                             <Box sx={{ flex: 1 }}>
                                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                     {activity.action}

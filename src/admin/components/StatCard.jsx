@@ -6,19 +6,23 @@ export default function StatCard({ title, value, trend }) {
     return (
         <Card
             sx={{
-                backgroundColor: '#dbeafe',
-                boxShadow: 2,
+                backgroundColor: '#FFFFFF',
+                boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
                 borderRadius: 3,
                 height: '100%',
+                border: '1px solid #E5E7EB',
             }}
         >
             <CardContent sx={{ textAlign: 'center', py: 3 }}>
                 <Typography
                     variant="subtitle2"
                     sx={{
-                        color: 'primary.main',
+                        color: '#7A7A7A',
                         mb: 2,
-                        opacity: 0.8,
+                        textTransform: 'uppercase',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        letterSpacing: '0.5px',
                     }}
                 >
                     {title}
@@ -26,7 +30,7 @@ export default function StatCard({ title, value, trend }) {
                 <Typography
                     variant="h3"
                     sx={{
-                        color: 'primary.main',
+                        color: '#2FA4A9',
                         fontWeight: 700,
                     }}
                 >
@@ -34,8 +38,8 @@ export default function StatCard({ title, value, trend }) {
                 </Typography>
                 {trend && (
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1, gap: 0.5 }}>
-                        <TrendingUpIcon sx={{ fontSize: '1rem', color: 'success.main' }} />
-                        <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 500 }}>
+                        <TrendingUpIcon sx={{ fontSize: '1rem', color: '#2FA4A9' }} />
+                        <Typography variant="caption" sx={{ color: '#2FA4A9', fontWeight: 500 }}>
                             {trend}
                         </Typography>
                     </Box>

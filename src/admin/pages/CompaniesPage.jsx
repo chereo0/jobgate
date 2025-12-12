@@ -66,7 +66,7 @@ export default function CompaniesPage() {
                 </Grid>
             </Grid>
 
-            <Card sx={{ borderRadius: 3, border: '2px solid #dbeafe' }}>
+            <Card sx={{ borderRadius: 3, border: '2px solid #AEE3E6' }}>
                 <TableContainer>
                     <Table>
                         <TableHead>

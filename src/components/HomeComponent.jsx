@@ -28,21 +28,19 @@ const CompanyCard = ({ company }) => {
     <Card
       sx={{
         height: "100%",
-        cursor: "pointer",
         transition: "all 0.3s ease",
         "&:hover": {
-          transform: "translateY(-8px)",
+          transform: "translateY(-4px)",
           boxShadow: "0 12px 24px rgba(0,0,0,0.15)",
         },
       }}
-      onClick={() => navigate(`/company-profile/${company._id}`)}
     >
       <CardContent>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
           {company.imageLink ? (
             <Avatar
               src={company.imageLink}
-              sx={{ width: 80, height: 80, mb: 2, border: "3px solid #0a66c2" }}
+              sx={{ width: 80, height: 80, mb: 2, border: "3px solid #2FA4A9" }}
             />
           ) : (
             <Avatar
@@ -50,7 +48,7 @@ const CompanyCard = ({ company }) => {
                 width: 80,
                 height: 80,
                 mb: 2,
-                backgroundColor: "#0a66c2",
+                backgroundColor: "#2FA4A9",
                 fontSize: "2rem",
               }}
             >
@@ -67,8 +65,8 @@ const CompanyCard = ({ company }) => {
             size="small"
             sx={{
               mb: 2,
-              backgroundColor: "#dbeafe",
-              color: "#1e40af",
+              backgroundColor: "#AEE3E6",
+              color: "#2FA4A9",
               fontWeight: 500,
             }}
           />
@@ -88,6 +86,7 @@ const CompanyCard = ({ company }) => {
               color="text.secondary"
               sx={{
                 mt: 1,
+                mb: 2,
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 display: "-webkit-box",
@@ -98,6 +97,21 @@ const CompanyCard = ({ company }) => {
               {company.about}
             </Typography>
           )}
+
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={() => navigate(`/company-profile/${company._id}`)}
+            sx={{
+              mt: 2,
+              backgroundColor: "#2FA4A9",
+              "&:hover": {
+                backgroundColor: "#258A8E",
+              },
+            }}
+          >
+            View Company
+          </Button>
         </Box>
       </CardContent>
     </Card>

@@ -14,6 +14,8 @@ import {
 } from '@mui/material';
 import {
     Edit as EditIcon,
+    Save as SaveIcon,
+    Cancel as CancelIcon,
     Business as BusinessIcon,
     PhotoCamera as PhotoCameraIcon,
 } from '@mui/icons-material';
@@ -22,7 +24,10 @@ import { toast } from 'react-toastify';
 
 export default function CompanyProfilePage() {
     const [companyData, setCompanyData] = useState(null);
+    const [editMode, setEditMode] = useState(false);
+    const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef(null);
 
@@ -34,6 +39,13 @@ export default function CompanyProfilePage() {
         try {
             const profile = await getUserProfile();
             setCompanyData(profile);
+            setFormData({
+                name: profile.name || '',
+                location: profile.location || '',
+                category: profile.category || '',
+                about: profile.about || '',
+                website: profile.website || '',
+            });
             setLoading(false);
         } catch (error) {
             console.error('Error fetching company profile:', error);
@@ -50,13 +62,11 @@ export default function CompanyProfilePage() {
         const file = event.target.files[0];
         if (!file) return;
 
-        // Validate file type
         if (!file.type.startsWith('image/')) {
             toast.error('Please upload an image file');
             return;
         }
 
-        // Validate file size (max 2MB)
         if (file.size > 2 * 1024 * 1024) {
             toast.error('Image size should be less than 2MB');
             return;
@@ -65,18 +75,12 @@ export default function CompanyProfilePage() {
         try {
             setUploading(true);
 
-            // Convert image to base64
             const reader = new FileReader();
             reader.onloadend = async () => {
                 try {
                     const base64Image = reader.result;
-
-                    // Update profile with new image
                     await updateUserProfile({ imageLink: base64Image });
-
-                    // Update local state
                     setCompanyData({ ...companyData, imageLink: base64Image });
-
                     toast.success('Profile image updated successfully');
                     setUploading(false);
                 } catch (error) {
@@ -99,10 +103,83 @@ export default function CompanyProfilePage() {
         }
     };
 
+    const handleEditToggle = () => {
+        if (editMode) {
+            // Cancel edit - reset form data
+            setFormData({
+                name: companyData.name || '',
+                location: companyData.location || '',
+                category: companyData.category || '',
+                about: companyData.about || '',
+                website: companyData.website || '',
+            });
+        }
+        setEditMode(!editMode);
+    };
+
+    const handleInputChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const handleSave = async () => {
+        try {
+            setSaving(true);
+
+            // Validate required fields
+            if (!formData.name.trim()) {
+                toast.error('Company name is required');
+                setSaving(false);
+                return;
+            }
+
+            // Prepare update data - explicitly include all fields
+            const updateData = {
+                name: formData.name,
+                location: formData.location,
+                category: formData.category,
+                about: formData.about,
+                website: formData.website,
+            };
+
+            console.log('Sending data to backend:', updateData);
+
+            // Update profile
+            const updatedProfile = await updateUserProfile(updateData);
+
+            console.log('Received from backend:', updatedProfile);
+
+            // Update local state with response from backend
+            setCompanyData(updatedProfile);
+
+            // Update form data to match saved data
+            setFormData({
+                name: updatedProfile.name || '',
+                location: updatedProfile.location || '',
+                category: updatedProfile.category || '',
+                about: updatedProfile.about || '',
+                website: updatedProfile.website || '',
+            });
+
+            setEditMode(false);
+            toast.success('Profile updated successfully');
+            setSaving(false);
+
+            // Refresh profile from backend to ensure sync
+            await fetchCompanyProfile();
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            toast.error(error.message || 'Failed to update profile');
+            setSaving(false);
+        }
+    };
+
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                <CircularProgress />
+                <CircularProgress sx={{ color: '#2FA4A9' }} />
             </Box>
         );
     }
@@ -117,7 +194,6 @@ export default function CompanyProfilePage() {
         );
     }
 
-    // Get first two letters for avatar fallback
     const avatarLetters = companyData.name?.substring(0, 2).toUpperCase() || 'CO';
 
     return (
@@ -126,6 +202,46 @@ export default function CompanyProfilePage() {
                 <Typography variant="h4" sx={{ color: 'text.primary', fontWeight: 600 }}>
                     Company Profile
                 </Typography>
+                {!editMode ? (
+                    <Button
+                        variant="contained"
+                        startIcon={<EditIcon />}
+                        onClick={handleEditToggle}
+                        sx={{
+                            backgroundColor: '#2FA4A9',
+                            '&:hover': { backgroundColor: '#258A8E' },
+                        }}
+                    >
+                        Edit Profile
+                    </Button>
+                ) : (
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Button
+                            variant="outlined"
+                            startIcon={<CancelIcon />}
+                            onClick={handleEditToggle}
+                            sx={{
+                                borderColor: '#7A7A7A',
+                                color: '#7A7A7A',
+                                '&:hover': { borderColor: '#4A4A4A', backgroundColor: '#F2F4F6' },
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="contained"
+                            startIcon={<SaveIcon />}
+                            onClick={handleSave}
+                            disabled={saving}
+                            sx={{
+                                backgroundColor: '#2FA4A9',
+                                '&:hover': { backgroundColor: '#258A8E' },
+                            }}
+                        >
+                            {saving ? 'Saving...' : 'Save Changes'}
+                        </Button>
+                    </Box>
+                )}
             </Box>
 
             <Grid container spacing={3}>
@@ -150,7 +266,7 @@ export default function CompanyProfilePage() {
                                             width: 120,
                                             height: 120,
                                             margin: '0 auto',
-                                            backgroundColor: '#0a66c2',
+                                            backgroundColor: '#2FA4A9',
                                             fontSize: '3rem',
                                             mb: 2,
                                         }}
@@ -159,7 +275,6 @@ export default function CompanyProfilePage() {
                                     </Avatar>
                                 )}
 
-                                {/* Upload button overlay */}
                                 <IconButton
                                     onClick={handleImageClick}
                                     disabled={uploading}
@@ -167,10 +282,10 @@ export default function CompanyProfilePage() {
                                         position: 'absolute',
                                         bottom: 16,
                                         right: -8,
-                                        backgroundColor: 'primary.main',
+                                        backgroundColor: '#2FA4A9',
                                         color: 'white',
                                         '&:hover': {
-                                            backgroundColor: 'primary.dark',
+                                            backgroundColor: '#258A8E',
                                         },
                                         width: 40,
                                         height: 40,
@@ -183,7 +298,6 @@ export default function CompanyProfilePage() {
                                     )}
                                 </IconButton>
 
-                                {/* Hidden file input */}
                                 <input
                                     ref={fileInputRef}
                                     type="file"
@@ -200,20 +314,19 @@ export default function CompanyProfilePage() {
                                 {companyData.category || 'Category'}
                             </Typography>
                             <Chip
-                                label={companyData.role || 'Company'}
-                                size="small"
+                                icon={<BusinessIcon />}
+                                label={companyData.role}
                                 sx={{
-                                    backgroundColor: '#dbeafe',
-                                    color: '#1e40af',
-                                    fontWeight: 500,
-                                    textTransform: 'capitalize',
+                                    backgroundColor: '#AEE3E6',
+                                    color: '#2FA4A9',
+                                    fontWeight: 600,
                                 }}
                             />
                         </CardContent>
                     </Card>
                 </Grid>
 
-                {/* Company Details Card */}
+                {/* Company Information Card */}
                 <Grid item xs={12} md={8}>
                     <Card>
                         <CardContent>
@@ -225,8 +338,11 @@ export default function CompanyProfilePage() {
                                     <TextField
                                         fullWidth
                                         label="Company Name"
-                                        value={companyData.name || ''}
-                                        InputProps={{ readOnly: true }}
+                                        name="name"
+                                        value={editMode ? formData.name : companyData.name || ''}
+                                        onChange={handleInputChange}
+                                        InputProps={{ readOnly: !editMode }}
+                                        required
                                     />
                                 </Grid>
                                 <Grid item xs={12} md={6}>
@@ -241,16 +357,32 @@ export default function CompanyProfilePage() {
                                     <TextField
                                         fullWidth
                                         label="Category"
-                                        value={companyData.category || ''}
-                                        InputProps={{ readOnly: true }}
+                                        name="category"
+                                        value={editMode ? formData.category : companyData.category || ''}
+                                        onChange={handleInputChange}
+                                        InputProps={{ readOnly: !editMode }}
                                     />
                                 </Grid>
                                 <Grid item xs={12} md={6}>
                                     <TextField
                                         fullWidth
                                         label="Location"
-                                        value={companyData.location || 'Not specified'}
-                                        InputProps={{ readOnly: true }}
+                                        name="location"
+                                        value={editMode ? formData.location : companyData.location || 'Not specified'}
+                                        onChange={handleInputChange}
+                                        InputProps={{ readOnly: !editMode }}
+                                        placeholder="e.g., New York, USA"
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Website"
+                                        name="website"
+                                        value={editMode ? formData.website : companyData.website || 'Not specified'}
+                                        onChange={handleInputChange}
+                                        InputProps={{ readOnly: !editMode }}
+                                        placeholder="https://www.company.com"
                                     />
                                 </Grid>
                                 <Grid item xs={12} md={6}>
@@ -259,6 +391,7 @@ export default function CompanyProfilePage() {
                                         label="User ID"
                                         value={companyData.userID || ''}
                                         InputProps={{ readOnly: true }}
+                                        helperText="User ID cannot be changed"
                                     />
                                 </Grid>
                                 <Grid item xs={12} md={6}>
@@ -273,10 +406,13 @@ export default function CompanyProfilePage() {
                                     <TextField
                                         fullWidth
                                         label="About"
-                                        value={companyData.about || 'No description available'}
+                                        name="about"
+                                        value={editMode ? formData.about : companyData.about || 'No description available'}
+                                        onChange={handleInputChange}
                                         multiline
                                         rows={4}
-                                        InputProps={{ readOnly: true }}
+                                        InputProps={{ readOnly: !editMode }}
+                                        placeholder="Tell us about your company..."
                                     />
                                 </Grid>
                             </Grid>

@@ -438,3 +438,13 @@ export const getPostsByCompanyAPI = async (companyId) => {
     throw error.response?.data || error.message;
   }
 };
+
+// Get company profile by ID (public)
+export const getCompanyProfileAPI = async (companyId) => {
+  try {
+    const response = await axios.get(`${API_URL}/company/${companyId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};

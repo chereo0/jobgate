@@ -119,7 +119,7 @@ export default function UserManagementPage() {
             case 'admin':
                 return { bg: '#fee2e2', color: '#991b1b' };
             case 'company':
-                return { bg: '#dbeafe', color: '#1e40af' };
+                return { bg: '#AEE3E6', color: '#2FA4A9' };
             case 'candidate':
                 return { bg: '#d1fae5', color: '#065f46' };
             default:
@@ -152,7 +152,7 @@ export default function UserManagementPage() {
                 </Grid>
             </Grid>
 
-            <Card sx={{ borderRadius: 3, border: '2px solid #dbeafe' }}>
+            <Card sx={{ borderRadius: 3, border: '2px solid #AEE3E6' }}>
                 <TableContainer>
                     <Table>
                         <TableHead>

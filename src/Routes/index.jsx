@@ -6,6 +6,7 @@ import ProfileLayout from "../layouts/ProfileLayout";
 import ConnectionLayout from "../layouts/ConnectionLayout";
 import AdminApp from "../admin/AdminApp";
 import CompanyApp from "../company/CompanyApp";
+import CompanyProfilePage from "../pages/CompanyProfilePage";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
   {
     path: "/connections",
     element: <ConnectionLayout />,
+  },
+  {
+    path: "/company-profile/:id",
+    element: <CompanyProfilePage />,
   },
   {
     path: "/admin/*",

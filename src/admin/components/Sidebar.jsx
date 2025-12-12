@@ -40,20 +40,22 @@ export default function Sidebar() {
                 '& .MuiDrawer-paper': {
                     width: drawerWidth,
                     boxSizing: 'border-box',
-                    backgroundColor: 'primary.main',
-                    color: 'white',
-                    borderRight: 'none',
+                    backgroundColor: '#F2F4F6',
+                    color: '#4A4A4A',
+                    borderRight: '1px solid #E5E7EB',
                 },
             }}
         >
-            <Box sx={{ p: 3 }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Box component="span" sx={{ fontSize: '2rem' }}>⚡</Box>
-                    JobGate Admin
+            <Box sx={{ p: 3, borderBottom: '1px solid #E5E7EB' }}>
+                <Typography variant="h5" sx={{ fontWeight: 700, color: '#2FA4A9' }}>
+                    JobGate
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#7A7A7A' }}>
+                    Admin Dashboard
                 </Typography>
             </Box>
 
-            <List sx={{ px: 1 }}>
+            <List sx={{ px: 1, pt: 2 }}>
                 {menuItems.map((item) => {
                     const isActive = location.pathname === item.path;
                     return (
@@ -64,14 +66,14 @@ export default function Sidebar() {
                             sx={{
                                 borderRadius: 2,
                                 mb: 0.5,
-                                backgroundColor: isActive ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
-                                borderLeft: isActive ? '4px solid #3b82f6' : '4px solid transparent',
+                                backgroundColor: isActive ? '#AEE3E6' : 'transparent',
+                                borderLeft: isActive ? '4px solid #2FA4A9' : '4px solid transparent',
                                 '&:hover': {
-                                    backgroundColor: isActive ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                                    backgroundColor: isActive ? '#AEE3E6' : 'rgba(47, 164, 169, 0.08)',
                                 },
                             }}
                         >
-                            <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>
+                            <ListItemIcon sx={{ color: isActive ? '#2FA4A9' : '#7A7A7A', minWidth: 40 }}>
                                 {item.icon}
                             </ListItemIcon>
                             <ListItemText
@@ -79,6 +81,7 @@ export default function Sidebar() {
                                 primaryTypographyProps={{
                                     fontSize: '0.95rem',
                                     fontWeight: isActive ? 600 : 400,
+                                    color: isActive ? '#4A4A4A' : '#7A7A7A',
                                 }}
                             />
                         </ListItem>

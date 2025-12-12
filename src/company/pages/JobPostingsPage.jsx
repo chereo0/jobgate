@@ -28,7 +28,7 @@ import { getMyJobsAPI, createJobAPI, deleteJobAPI, getAllCategoriesAPI } from '.
 import { toast } from 'react-toastify';
 
 const StatCard = ({ title, value, subtitle }) => (
-    <Card sx={{ backgroundColor: '#dbeafe', height: '100%' }}>
+    <Card sx={{ backgroundColor: '#AEE3E6', height: '100%' }}>
         <CardContent sx={{ textAlign: 'center', py: 3 }}>
             <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 1, textTransform: 'uppercase', fontSize: '0.75rem' }}>
                 {title}

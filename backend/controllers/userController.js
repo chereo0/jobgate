@@ -109,6 +109,7 @@ const loginUser = async (req, res) => {
                 location: user.location,
                 category: user.category,
                 about: user.about,
+                website: user.website,
                 token: generateToken(user._id),
             });
         } else {
@@ -146,18 +147,24 @@ const updateUserProfile = async (req, res) => {
         const user = await User.findById(req.user._id);
 
         if (user) {
+            // Prevent userID from being changed
+            if (req.body.userID && req.body.userID !== user.userID) {
+                return res.status(400).json({ message: "User ID cannot be changed" });
+            }
+
             user.name = req.body.name || user.name;
             user.email = req.body.email || user.email;
             user.imageLink = req.body.imageLink || user.imageLink;
-            user.headline = req.body.headline || user.headline;
+            user.headline = req.body.headline !== undefined ? req.body.headline : user.headline;
 
             // Update role-specific fields
             if (user.role === "candidate") {
                 user.cvFileName = req.body.cvFileName || user.cvFileName;
             } else if (user.role === "company") {
-                user.location = req.body.location || user.location;
-                user.category = req.body.category || user.category;
-                user.about = req.body.about || user.about;
+                if (req.body.location !== undefined) user.location = req.body.location;
+                if (req.body.category !== undefined) user.category = req.body.category;
+                if (req.body.about !== undefined) user.about = req.body.about;
+                if (req.body.website !== undefined) user.website = req.body.website;
             }
 
             if (req.body.password) {
@@ -174,6 +181,12 @@ const updateUserProfile = async (req, res) => {
                 email: updatedUser.email,
                 role: updatedUser.role,
                 imageLink: updatedUser.imageLink,
+                headline: updatedUser.headline,
+                cvFileName: updatedUser.cvFileName,
+                location: updatedUser.location,
+                category: updatedUser.category,
+                about: updatedUser.about,
+                website: updatedUser.website,
                 token: generateToken(updatedUser._id),
             });
         } else {

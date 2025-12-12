@@ -80,7 +80,7 @@ const candidates = [
 const getStatusColor = (status) => {
     switch (status) {
         case 'Interview Scheduled':
-            return { bg: '#dbeafe', color: '#1e40af' };
+            return { bg: '#AEE3E6', color: '#2FA4A9' };
         case 'Shortlisted':
             return { bg: '#d1fae5', color: '#065f46' };
         case 'Under Review':
@@ -141,7 +141,7 @@ export default function CandidatesPage() {
             {/* Statistics */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
                 <Grid item xs={12} md={3}>
-                    <Card sx={{ backgroundColor: '#dbeafe' }}>
+                    <Card sx={{ backgroundColor: '#AEE3E6' }}>
                         <Box sx={{ p: 2, textAlign: 'center' }}>
                             <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main' }}>
                                 265
@@ -220,7 +220,7 @@ export default function CandidatesPage() {
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                                 <Avatar
                                                     sx={{
-                                                        backgroundColor: '#0a66c2',
+                                                        backgroundColor: '#2FA4A9',
                                                         width: 40,
                                                         height: 40,
                                                         fontWeight: 600,

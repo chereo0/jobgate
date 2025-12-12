@@ -53,7 +53,7 @@ const PostCard = ({ post, onDelete, onLike, currentUserId }) => {
                         {post.authorImage ? (
                             <Avatar src={post.authorImage} sx={{ width: 48, height: 48 }} />
                         ) : (
-                            <Avatar sx={{ backgroundColor: '#0a66c2', width: 48, height: 48 }}>
+                            <Avatar sx={{ backgroundColor: '#2FA4A9', width: 48, height: 48 }}>
                                 {post.authorName?.charAt(0).toUpperCase() || 'U'}
                             </Avatar>
                         )}
@@ -96,7 +96,7 @@ const PostCard = ({ post, onDelete, onLike, currentUserId }) => {
                         onClick={() => onLike(post._id)}
                     >
                         {isLiked ? (
-                            <ThumbUpIcon sx={{ fontSize: 20, color: '#0a66c2' }} />
+                            <ThumbUpIcon sx={{ fontSize: 20, color: '#2FA4A9' }} />
                         ) : (
                             <ThumbUpOutlinedIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
                         )}
@@ -241,7 +241,7 @@ export default function PostsPage() {
             {/* Stats Cards */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
                 <Grid item xs={12} md={4}>
-                    <Card sx={{ backgroundColor: '#dbeafe' }}>
+                    <Card sx={{ backgroundColor: '#AEE3E6' }}>
                         <CardContent sx={{ textAlign: 'center' }}>
                             <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main' }}>
                                 {posts.length}

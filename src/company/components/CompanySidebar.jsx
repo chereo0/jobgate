@@ -40,17 +40,17 @@ export default function CompanySidebar() {
                 '& .MuiDrawer-paper': {
                     width: drawerWidth,
                     boxSizing: 'border-box',
-                    backgroundColor: '#0f172a',
-                    color: 'white',
-                    borderRight: 'none',
+                    backgroundColor: '#F2F4F6',
+                    color: '#4A4A4A',
+                    borderRight: '1px solid #E5E7EB',
                 },
             }}
         >
-            <Box sx={{ p: 3, borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: '#0a66c2' }}>
+            <Box sx={{ p: 3, borderBottom: '1px solid #E5E7EB' }}>
+                <Typography variant="h5" sx={{ fontWeight: 700, color: '#2FA4A9' }}>
                     JobGate
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+                <Typography variant="caption" sx={{ color: '#7A7A7A' }}>
                     Company Dashboard
                 </Typography>
             </Box>
@@ -66,14 +66,14 @@ export default function CompanySidebar() {
                             sx={{
                                 borderRadius: 2,
                                 mb: 1,
-                                backgroundColor: isActive ? 'rgba(10, 102, 194, 0.2)' : 'transparent',
-                                borderLeft: isActive ? '4px solid #0a66c2' : '4px solid transparent',
+                                backgroundColor: isActive ? '#AEE3E6' : 'transparent',
+                                borderLeft: isActive ? '4px solid #2FA4A9' : '4px solid transparent',
                                 '&:hover': {
-                                    backgroundColor: isActive ? 'rgba(10, 102, 194, 0.3)' : 'rgba(255, 255, 255, 0.05)',
+                                    backgroundColor: isActive ? '#AEE3E6' : 'rgba(47, 164, 169, 0.08)',
                                 },
                             }}
                         >
-                            <ListItemIcon sx={{ color: isActive ? '#0a66c2' : 'rgba(255, 255, 255, 0.7)', minWidth: 40 }}>
+                            <ListItemIcon sx={{ color: isActive ? '#2FA4A9' : '#7A7A7A', minWidth: 40 }}>
                                 {item.icon}
                             </ListItemIcon>
                             <ListItemText
@@ -81,6 +81,7 @@ export default function CompanySidebar() {
                                 primaryTypographyProps={{
                                     fontSize: '0.95rem',
                                     fontWeight: isActive ? 600 : 400,
+                                    color: isActive ? '#4A4A4A' : '#7A7A7A',
                                 }}
                             />
                         </ListItem>

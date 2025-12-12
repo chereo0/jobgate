@@ -20,6 +20,23 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/featured-companies", getFeaturedCompanies);
 
+// Public company profile route (must be before /:id to avoid conflicts)
+router.get("/company/:id", async (req, res) => {
+    try {
+        const User = require("../models/User");
+        const company = await User.findOne({ _id: req.params.id, role: "company" }).select("-password");
+
+        if (company) {
+            res.json(company);
+        } else {
+            res.status(404).json({ message: "Company not found" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
 // Protected routes
 router.route("/profile").get(protect, getUserProfile).put(protect, updateUserProfile);
 

@@ -70,8 +70,8 @@ const CategoryCard = ({ category, onDelete }) => (
                     label={`${category.jobCount || 0} Jobs`}
                     size="small"
                     sx={{
-                        backgroundColor: '#dbeafe',
-                        color: '#1e40af',
+                        backgroundColor: '#AEE3E6',
+                        color: '#2FA4A9',
                         fontWeight: 500,
                     }}
                 />

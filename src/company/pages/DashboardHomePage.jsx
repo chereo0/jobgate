@@ -36,7 +36,7 @@ const StatCard = ({ title, value, subtitle, icon, color }) => (
                 </Box>
                 <Box
                     sx={{
-                        backgroundColor: `${color || '#0a66c2'}15`,
+                        backgroundColor: `${color || '#2FA4A9'}15`,
                         borderRadius: 2,
                         p: 1.5,
                         display: 'flex',
@@ -82,8 +82,8 @@ const RecentActivity = () => {
                                 sx={{
                                     width: 32,
                                     height: 32,
-                                    backgroundColor: activity.type === 'application' ? '#dbeafe' : '#d1fae5',
-                                    color: activity.type === 'application' ? '#0a66c2' : '#10b981',
+                                    backgroundColor: activity.type === 'application' ? '#AEE3E6' : '#d1fae5',
+                                    color: activity.type === 'application' ? '#2FA4A9' : '#10b981',
                                     fontSize: '0.875rem',
                                 }}
                             >
@@ -143,7 +143,7 @@ const JobPerformance = () => {
                                     borderRadius: 3,
                                     backgroundColor: '#e5e7eb',
                                     '& .MuiLinearProgress-bar': {
-                                        backgroundColor: '#0a66c2',
+                                        backgroundColor: '#2FA4A9',
                                     },
                                 }}
                             />
@@ -174,8 +174,8 @@ export default function DashboardHomePage() {
                         title="Active Jobs"
                         value="5"
                         subtitle="+2 this week"
-                        icon={<WorkIcon sx={{ fontSize: 32, color: '#0a66c2' }} />}
-                        color="#0a66c2"
+                        icon={<WorkIcon sx={{ fontSize: 32, color: '#2FA4A9' }} />}
+                        color="#2FA4A9"
                     />
                 </Grid>
                 <Grid item xs={12} md={3}>

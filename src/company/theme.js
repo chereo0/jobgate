@@ -3,21 +3,21 @@ import { createTheme } from '@mui/material/styles';
 const companyTheme = createTheme({
     palette: {
         primary: {
-            main: '#0a66c2', // LinkedIn blue
-            light: '#3b82f6',
-            dark: '#004182',
+            main: '#2FA4A9', // Teal accent
+            light: '#AEE3E6', // Soft cyan
+            dark: '#258A8E',
         },
         secondary: {
-            main: '#0f172a', // Dark navy
-            light: '#1e293b',
+            main: '#AEE3E6', // Soft cyan
+            light: '#D4F1F3',
         },
         background: {
-            default: '#f8f9fb',
-            paper: '#ffffff',
+            default: '#FFFFFF',
+            paper: '#FFFFFF',
         },
         success: {
-            main: '#10b981',
-            light: '#d1fae5',
+            main: '#2FA4A9',
+            light: '#AEE3E6',
         },
         warning: {
             main: '#f59e0b',
