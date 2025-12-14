@@ -6,13 +6,11 @@ const User = require("../models/User");
 // @access  Public
 const getAllJobs = async (req, res) => {
     try {
-        const { status, type, category, search } = req.query;
+        const { status, type, category, location, company, search, page = 1, limit = 10 } = req.query;
         let query = {};
 
-        // Filter by status
-        if (status) {
-            query.status = status;
-        }
+        // Filter by status (default to active)
+        query.status = status || 'active';
 
         // Filter by type
         if (type) {
@@ -24,6 +22,16 @@ const getAllJobs = async (req, res) => {
             query.category = category;
         }
 
+        // Filter by location
+        if (location) {
+            query.location = { $regex: location, $options: "i" };
+        }
+
+        // Filter by company
+        if (company) {
+            query.company = company;
+        }
+
         // Search by title or company name
         if (search) {
             query.$or = [
@@ -32,11 +40,25 @@ const getAllJobs = async (req, res) => {
             ];
         }
 
+        // Pagination
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
+        const skip = (pageNum - 1) * limitNum;
+
         const jobs = await Job.find(query)
             .populate("company", "name email imageLink")
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limitNum);
 
-        res.json(jobs);
+        const total = await Job.countDocuments(query);
+
+        res.json({
+            jobs,
+            currentPage: pageNum,
+            totalPages: Math.ceil(total / limitNum),
+            totalJobs: total,
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -231,6 +253,38 @@ const getMyJobs = async (req, res) => {
     }
 };
 
+// @desc    Get job filter options
+// @route   GET /api/jobs/filters
+// @access  Public
+const getJobFilters = async (req, res) => {
+    try {
+        // Get unique locations
+        const locations = await Job.distinct("location", { status: "active" });
+
+        // Get unique categories
+        const categories = await Job.distinct("category", { status: "active" });
+
+        // Get companies that have active jobs
+        const companies = await Job.find({ status: "active" })
+            .distinct("company")
+            .then(async (companyIds) => {
+                const companyDetails = await User.find({
+                    _id: { $in: companyIds },
+                    role: "company"
+                }).select("_id name imageLink");
+                return companyDetails;
+            });
+
+        res.json({
+            locations: locations.filter(loc => loc), // Remove empty values
+            categories: categories.filter(cat => cat),
+            companies,
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getAllJobs,
     getJobById,
@@ -239,4 +293,5 @@ module.exports = {
     deleteJob,
     getJobsByCompany,
     getMyJobs,
+    getJobFilters,
 };

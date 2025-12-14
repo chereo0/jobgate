@@ -45,10 +45,14 @@ const createPost = async (req, res) => {
             return res.status(400).json({ message: "Description is required" });
         }
 
+        // Fetch current user to get latest profile image
+        const User = require("../models/User");
+        const currentUser = await User.findById(req.user._id);
+
         const post = await Post.create({
             author: req.user._id,
-            authorName: req.user.name,
-            authorImage: req.user.imageLink || "",
+            authorName: currentUser.name,
+            authorImage: currentUser.imageLink || "",
             description,
             image: image || "",
         });

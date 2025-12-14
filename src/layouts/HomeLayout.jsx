@@ -1,14 +1,23 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Home from "../Pages/Home";
-import { getCurrentUser } from "../api/FirestoreAPI";
+import { getUserProfile } from "../api/AuthAPI";
 import Topbar from "../components/common/Topbar";
 
 export default function HomeLayout() {
   const [currentUser, setCurrentUser] = useState({});
 
-  useMemo(() => {
-    getCurrentUser(setCurrentUser);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const profile = await getUserProfile();
+        setCurrentUser(profile);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+    fetchUser();
   }, []);
+
   return (
     <div>
       <Topbar currentUser={currentUser} />

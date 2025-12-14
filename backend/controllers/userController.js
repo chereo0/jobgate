@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { createNotification } = require("./notificationController");
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -55,6 +56,14 @@ const registerUser = async (req, res) => {
         });
 
         if (user) {
+            // Create notification for admin
+            const roleLabel = role === "company" ? "Company" : "Candidate";
+            await createNotification(
+                "new_user",
+                `New ${roleLabel} registered: ${name}`,
+                user._id
+            );
+
             res.status(201).json({
                 _id: user._id,
                 userID: user.userID,

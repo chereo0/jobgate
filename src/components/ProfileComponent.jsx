@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getUserProfile, updateUserProfile } from '../api/AuthAPI';
 import { toast } from 'react-toastify';
+import { AiOutlineCamera, AiOutlineClose } from 'react-icons/ai';
 
 export default function ProfileComponent() {
   const [profileData, setProfileData] = useState(null);
@@ -8,6 +9,10 @@ export default function ProfileComponent() {
   const [isEditingAbout, setIsEditingAbout] = useState(false);
   const [aboutText, setAboutText] = useState('');
   const [saving, setSaving] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -44,6 +49,65 @@ export default function ProfileComponent() {
   const handleCancelEdit = () => {
     setAboutText(profileData.headline || '');
     setIsEditingAbout(false);
+  };
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error('Image size should be less than 5MB');
+        return;
+      }
+
+      setSelectedImage(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!selectedImage) {
+      toast.error('Please select an image');
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+
+      // Convert image to base64
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          await updateUserProfile({ imageLink: reader.result });
+          setProfileData({ ...profileData, imageLink: reader.result });
+          setShowImageModal(false);
+          setSelectedImage(null);
+          setImagePreview(null);
+          toast.success('Profile picture updated successfully');
+        } catch (error) {
+          console.error('Error uploading image:', error);
+          toast.error('Failed to update profile picture');
+        } finally {
+          setUploadingImage(false);
+        }
+      };
+      reader.readAsDataURL(selectedImage);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Failed to update profile picture');
+      setUploadingImage(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowImageModal(false);
+    setSelectedImage(null);
+    setImagePreview(null);
   };
 
   if (loading) {
@@ -97,17 +161,28 @@ export default function ProfileComponent() {
         {/* Profile Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex items-start gap-6">
-            {profileData.imageLink ? (
-              <img
-                src={profileData.imageLink}
-                alt={profileData.name}
-                className="w-32 h-32 rounded-full object-cover border-4 border-[#0a66c2]"
-              />
-            ) : (
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-[#0a66c2] to-[#004182] flex items-center justify-center border-4 border-[#0a66c2] shadow-lg">
-                <span className="text-white text-5xl font-bold">{avatarLetter}</span>
-              </div>
-            )}
+            {/* Profile Image with Camera Icon */}
+            <div className="relative group">
+              {profileData.imageLink ? (
+                <img
+                  src={profileData.imageLink}
+                  alt={profileData.name}
+                  className="w-32 h-32 rounded-full object-cover border-4 border-[#0a66c2]"
+                />
+              ) : (
+                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-[#0a66c2] to-[#004182] flex items-center justify-center border-4 border-[#0a66c2] shadow-lg">
+                  <span className="text-white text-5xl font-bold">{avatarLetter}</span>
+                </div>
+              )}
+              {/* Camera Icon Overlay */}
+              <button
+                onClick={() => setShowImageModal(true)}
+                className="absolute bottom-0 right-0 bg-[#0a66c2] hover:bg-[#004182] text-white rounded-full p-3 shadow-lg transition-all duration-200 transform hover:scale-110"
+                title="Change profile picture"
+              >
+                <AiOutlineCamera className="text-xl" />
+              </button>
+            </div>
             <div className="flex-1">
               <h1 className="text-3xl font-bold text-gray-900">{profileData.name}</h1>
               <p className="text-lg text-gray-600 mt-1">{profileData.headline || 'Professional'}</p>
@@ -120,6 +195,78 @@ export default function ProfileComponent() {
             </div>
           </div>
         </div>
+
+        {/* Image Upload Modal */}
+        {showImageModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">Change Profile Picture</h2>
+                <button
+                  onClick={handleCloseModal}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <AiOutlineClose className="text-2xl" />
+                </button>
+              </div>
+
+              {/* Image Preview */}
+              <div className="mb-4">
+                {imagePreview ? (
+                  <div className="relative">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-full h-64 object-cover rounded-lg"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="text-center">
+                      <AiOutlineCamera className="text-6xl text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-500">No image selected</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* File Input */}
+              <div className="mb-4">
+                <label className="block w-full">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                    id="imageInput"
+                  />
+                  <div className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-[#0a66c2] hover:bg-blue-50 transition-all">
+                    <p className="text-gray-600">Click to select an image</p>
+                    <p className="text-xs text-gray-400 mt-1">Max size: 5MB</p>
+                  </div>
+                </label>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCloseModal}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  disabled={uploadingImage}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleImageUpload}
+                  disabled={!selectedImage || uploadingImage}
+                  className="flex-1 px-4 py-2 bg-[#0a66c2] text-white rounded-lg hover:bg-[#004182] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  {uploadingImage ? 'Uploading...' : 'Upload'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Personal Information */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">

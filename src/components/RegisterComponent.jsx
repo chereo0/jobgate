@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { RegisterAPI, getAllCategoriesAPI } from "../api/AuthAPI";
-import LinkedinLogo from "../assets/linkedinLogo.png";
+// Using JobGate logo instead of LinkedIn logo
+const LinkedinLogo = "/b528c485-1cc6-41f6-8521-404788fdef37.jpg";
 import { useNavigate } from "react-router-dom";
 import { getUniqueID } from "../helpers/getUniqueId";
 import { toast } from "react-toastify";

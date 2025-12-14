@@ -7,10 +7,16 @@ export default function StatCard({ title, value, trend }) {
         <Card
             sx={{
                 backgroundColor: '#FFFFFF',
-                boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
                 borderRadius: 3,
                 height: '100%',
                 border: '1px solid #E5E7EB',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 24px rgba(47, 164, 169, 0.15)',
+                    borderColor: '#2FA4A9',
+                }
             }}
         >
             <CardContent sx={{ textAlign: 'center', py: 3 }}>

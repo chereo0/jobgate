@@ -30,6 +30,10 @@ export default function ProfilePopup() {
           }
         />
         <Button
+          title="My Connections"
+          onClick={() => navigate("/friends")}
+        />
+        <Button
           title="Log out"
           onClick={() => {
             LogoutAPI();

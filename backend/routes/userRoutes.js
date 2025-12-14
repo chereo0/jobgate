@@ -19,6 +19,7 @@ const { protect, admin } = require("../middleware/authMiddleware");
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/featured-companies", getFeaturedCompanies);
+router.get("/all-companies", getAllCompanies); // Public route for all companies
 
 // Public company profile route (must be before /:id to avoid conflicts)
 router.get("/company/:id", async (req, res) => {

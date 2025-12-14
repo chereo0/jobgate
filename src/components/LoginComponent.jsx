@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { LoginAPI } from "../api/AuthAPI";
-import LinkedinLogo from "../assets/linkedinLogo.png";
+// Using JobGate logo instead of LinkedIn logo
+const LinkedinLogo = "/b528c485-1cc6-41f6-8521-404788fdef37.jpg";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -130,7 +131,7 @@ export default function LoginComponent() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500">
-                  New to LinkedIn?
+                  New to JobGate?
                 </span>
               </div>
             </div>

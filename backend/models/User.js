@@ -38,6 +38,10 @@ const userSchema = mongoose.Schema(
             type: String,
             default: "",
         },
+        cv: {
+            type: String,
+            default: "",
+        },
         // Company-specific fields
         location: {
             type: String,

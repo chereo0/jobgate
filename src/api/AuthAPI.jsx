@@ -147,15 +147,10 @@ export const deleteUserById = async (userId) => {
   }
 };
 
-// Get all companies (admin only)
+// Get all companies (public)
 export const getAllCompanies = async () => {
   try {
-    const token = localStorage.getItem("authToken");
-    const response = await axios.get(`${API_URL}/companies`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(`${API_URL}/all-companies`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;

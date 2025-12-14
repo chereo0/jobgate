@@ -45,7 +45,7 @@ function TabPanel({ children, value, index }) {
     );
 }
 
-const JobCard = ({ job }) => (
+const JobCard = ({ job, onApply }) => (
     <Card
         sx={{
             mb: 2.5,
@@ -69,6 +69,7 @@ const JobCard = ({ job }) => (
                             mb: 1.5,
                             '&:hover': { textDecoration: 'underline', cursor: 'pointer' }
                         }}
+                        onClick={() => onApply(job._id)}
                     >
                         {job.title}
                     </Typography>
@@ -148,6 +149,7 @@ const JobCard = ({ job }) => (
                 )}
                 <Button
                     variant="contained"
+                    onClick={() => onApply(job._id)}
                     sx={{
                         backgroundColor: '#2FA4A9',
                         px: 3,
@@ -292,7 +294,8 @@ export default function CompanyProfilePage() {
                 const jobsResponse = await fetch(`http://localhost:5000/api/jobs?company=${id}`);
                 if (jobsResponse.ok) {
                     const jobsData = await jobsResponse.json();
-                    setJobs(jobsData);
+                    // Extract jobs array from response (API returns { jobs: [...], totalPages, etc })
+                    setJobs(jobsData.jobs || jobsData || []);
                 }
             } catch (error) {
                 console.log('Jobs not available');
@@ -360,29 +363,6 @@ export default function CompanyProfilePage() {
                             <Typography variant="h6" sx={{ fontWeight: 600, color: '#4A4A4A' }}>
                                 {company.name}
                             </Typography>
-                        </Box>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                            <Button
-                                variant="outlined"
-                                startIcon={<ShareIcon />}
-                                sx={{
-                                    borderColor: '#2FA4A9',
-                                    color: '#2FA4A9',
-                                    '&:hover': { borderColor: '#258A8E', backgroundColor: '#AEE3E6' }
-                                }}
-                            >
-                                Share
-                            </Button>
-                            <Button
-                                variant="contained"
-                                startIcon={<EmailIcon />}
-                                sx={{
-                                    backgroundColor: '#2FA4A9',
-                                    '&:hover': { backgroundColor: '#258A8E' }
-                                }}
-                            >
-                                Contact
-                            </Button>
                         </Box>
                     </Box>
                 </Container>
@@ -585,7 +565,7 @@ export default function CompanyProfilePage() {
                                     <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, color: '#4A4A4A' }}>
                                         Open Positions at {company.name}
                                     </Typography>
-                                    {jobs.map((job) => <JobCard key={job._id} job={job} />)}
+                                    {jobs.map((job) => <JobCard key={job._id} job={job} onApply={(jobId) => navigate(`/job/${jobId}`)} />)}
                                 </Box>
                             )}
                         </TabPanel>

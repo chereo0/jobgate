@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Typography,
     Grid,
@@ -18,74 +18,29 @@ import {
     Select,
     MenuItem,
     FormControl,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    CircularProgress,
+    IconButton,
 } from '@mui/material';
 import {
     Search as SearchIcon,
-    FilterList as FilterIcon,
+    Visibility as ViewIcon,
+    Close as CloseIcon,
+    Download as DownloadIcon,
 } from '@mui/icons-material';
-
-const candidates = [
-    {
-        id: 1,
-        name: 'Sarah Johnson',
-        position: 'Senior Software Engineer',
-        appliedDate: '2024-03-15',
-        status: 'Interview Scheduled',
-        experience: '8 years',
-        location: 'San Francisco, CA',
-        avatar: 'S',
-    },
-    {
-        id: 2,
-        name: 'Michael Chen',
-        position: 'Product Manager',
-        appliedDate: '2024-03-14',
-        status: 'Under Review',
-        experience: '6 years',
-        location: 'New York, NY',
-        avatar: 'M',
-    },
-    {
-        id: 3,
-        name: 'Emily Rodriguez',
-        position: 'UX Designer',
-        appliedDate: '2024-03-13',
-        status: 'Shortlisted',
-        experience: '5 years',
-        location: 'Austin, TX',
-        avatar: 'E',
-    },
-    {
-        id: 4,
-        name: 'David Kim',
-        position: 'Data Analyst',
-        appliedDate: '2024-03-12',
-        status: 'New Application',
-        experience: '4 years',
-        location: 'Seattle, WA',
-        avatar: 'D',
-    },
-    {
-        id: 5,
-        name: 'Jessica Williams',
-        position: 'Senior Software Engineer',
-        appliedDate: '2024-03-11',
-        status: 'Interview Scheduled',
-        experience: '7 years',
-        location: 'Boston, MA',
-        avatar: 'J',
-    },
-];
+import { getCompanyApplicationsAPI, updateApplicationStatusAPI } from '../../api/ApplicationAPI';
+import { toast } from 'react-toastify';
 
 const getStatusColor = (status) => {
     switch (status) {
-        case 'Interview Scheduled':
-            return { bg: '#AEE3E6', color: '#2FA4A9' };
-        case 'Shortlisted':
+        case 'shortlisted':
             return { bg: '#d1fae5', color: '#065f46' };
-        case 'Under Review':
-            return { bg: '#fed7aa', color: '#92400e' };
-        case 'New Application':
+        case 'rejected':
+            return { bg: '#fee2e2', color: '#991b1b' };
+        case 'pending':
             return { bg: '#e0e7ff', color: '#3730a3' };
         default:
             return { bg: '#f3f4f6', color: '#374151' };
@@ -93,6 +48,101 @@ const getStatusColor = (status) => {
 };
 
 export default function CandidatesPage() {
+    const [applications, setApplications] = useState([]);
+    const [filteredApplications, setFilteredApplications] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedApplication, setSelectedApplication] = useState(null);
+    const [dialogOpen, setDialogOpen] = useState(false);
+
+    useEffect(() => {
+        fetchApplications();
+    }, []);
+
+    useEffect(() => {
+        filterApplications();
+    }, [applications, statusFilter, searchQuery]);
+
+    const fetchApplications = async () => {
+        try {
+            const data = await getCompanyApplicationsAPI();
+            setApplications(data);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching applications:', error);
+            toast.error('Failed to load applications');
+            setLoading(false);
+        }
+    };
+
+    const filterApplications = () => {
+        let filtered = applications;
+
+        // Filter by status
+        if (statusFilter !== 'all') {
+            filtered = filtered.filter(app => app.status === statusFilter);
+        }
+
+        // Filter by search query
+        if (searchQuery) {
+            filtered = filtered.filter(app =>
+                app.applicantName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                app.jobTitle.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        setFilteredApplications(filtered);
+    };
+
+    const handleStatusUpdate = async (applicationId, newStatus) => {
+        try {
+            await updateApplicationStatusAPI(applicationId, newStatus);
+            toast.success(`Application ${newStatus} successfully`);
+            fetchApplications();
+        } catch (error) {
+            console.error('Error updating status:', error);
+            toast.error('Failed to update status');
+        }
+    };
+
+    const handleViewDetails = (application) => {
+        setSelectedApplication(application);
+        setDialogOpen(true);
+    };
+
+    const handleDownloadCV = (application) => {
+        // Create a download link for the CV
+        const link = document.createElement('a');
+        link.href = application.cv;
+        link.download = application.cvFileName || `CV_${application.applicantName}.pdf`;
+        link.click();
+    };
+
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+    };
+
+    // Calculate statistics
+    const stats = {
+        total: applications.length,
+        shortlisted: applications.filter(app => app.status === 'shortlisted').length,
+        pending: applications.filter(app => app.status === 'pending').length,
+        rejected: applications.filter(app => app.status === 'rejected').length,
+    };
+
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+                <CircularProgress sx={{ color: '#2FA4A9' }} />
+            </Box>
+        );
+    }
+
     return (
         <Box>
             <Typography variant="h4" sx={{ mb: 4, color: 'text.primary', fontWeight: 600 }}>
@@ -103,8 +153,10 @@ export default function CandidatesPage() {
             <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
                 <TextField
                     fullWidth
-                    placeholder="Search candidates by name, position, or skills..."
+                    placeholder="Search candidates by name or position..."
                     size="small"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -121,7 +173,8 @@ export default function CandidatesPage() {
                 />
                 <FormControl size="small" sx={{ minWidth: 150 }}>
                     <Select
-                        defaultValue="all"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
                         sx={{
                             backgroundColor: 'white',
                             '& .MuiOutlinedInput-notchedOutline': {
@@ -130,10 +183,9 @@ export default function CandidatesPage() {
                         }}
                     >
                         <MenuItem value="all">All Status</MenuItem>
-                        <MenuItem value="new">New Applications</MenuItem>
-                        <MenuItem value="review">Under Review</MenuItem>
+                        <MenuItem value="pending">Pending</MenuItem>
                         <MenuItem value="shortlisted">Shortlisted</MenuItem>
-                        <MenuItem value="interview">Interview Scheduled</MenuItem>
+                        <MenuItem value="rejected">Rejected</MenuItem>
                     </Select>
                 </FormControl>
             </Box>
@@ -144,10 +196,10 @@ export default function CandidatesPage() {
                     <Card sx={{ backgroundColor: '#AEE3E6' }}>
                         <Box sx={{ p: 2, textAlign: 'center' }}>
                             <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                                265
+                                {stats.total}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                                Total Candidates
+                                Total Applications
                             </Typography>
                         </Box>
                     </Card>
@@ -156,7 +208,7 @@ export default function CandidatesPage() {
                     <Card sx={{ backgroundColor: '#d1fae5' }}>
                         <Box sx={{ p: 2, textAlign: 'center' }}>
                             <Typography variant="h4" sx={{ fontWeight: 700, color: '#10b981' }}>
-                                45
+                                {stats.shortlisted}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 Shortlisted
@@ -168,29 +220,29 @@ export default function CandidatesPage() {
                     <Card sx={{ backgroundColor: '#e0e7ff' }}>
                         <Box sx={{ p: 2, textAlign: 'center' }}>
                             <Typography variant="h4" sx={{ fontWeight: 700, color: '#6366f1' }}>
-                                12
+                                {stats.pending}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                                Interviews Today
+                                Pending Review
                             </Typography>
                         </Box>
                     </Card>
                 </Grid>
                 <Grid item xs={12} md={3}>
-                    <Card sx={{ backgroundColor: '#fed7aa' }}>
+                    <Card sx={{ backgroundColor: '#fee2e2' }}>
                         <Box sx={{ p: 2, textAlign: 'center' }}>
-                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#f59e0b' }}>
-                                28
+                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#dc2626' }}>
+                                {stats.rejected}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                                New This Week
+                                Rejected
                             </Typography>
                         </Box>
                     </Card>
                 </Grid>
             </Grid>
 
-            {/* Candidates Table */}
+            {/* Applications Table */}
             <Card sx={{ borderRadius: 3 }}>
                 <TableContainer>
                     <Table>
@@ -206,81 +258,244 @@ export default function CandidatesPage() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {candidates.map((candidate, index) => {
-                                const statusColors = getStatusColor(candidate.status);
-                                return (
-                                    <TableRow
-                                        key={candidate.id}
-                                        sx={{
-                                            backgroundColor: index % 2 === 0 ? 'white' : '#fafbfc',
-                                            '&:hover': { backgroundColor: '#f3f4f6' },
-                                        }}
-                                    >
-                                        <TableCell>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                <Avatar
-                                                    sx={{
-                                                        backgroundColor: '#2FA4A9',
-                                                        width: 40,
-                                                        height: 40,
-                                                        fontWeight: 600,
-                                                    }}
-                                                >
-                                                    {candidate.avatar}
-                                                </Avatar>
-                                                <Typography sx={{ fontWeight: 500 }}>{candidate.name}</Typography>
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell>{candidate.position}</TableCell>
-                                        <TableCell sx={{ color: 'text.secondary' }}>{candidate.experience}</TableCell>
-                                        <TableCell sx={{ color: 'text.secondary' }}>{candidate.location}</TableCell>
-                                        <TableCell sx={{ color: 'text.secondary' }}>{candidate.appliedDate}</TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                label={candidate.status}
-                                                size="small"
-                                                sx={{
-                                                    backgroundColor: statusColors.bg,
-                                                    color: statusColors.color,
-                                                    fontWeight: 500,
-                                                    borderRadius: 2,
-                                                }}
-                                            />
-                                        </TableCell>
-                                        <TableCell align="right">
-                                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                                                <Button
+                            {filteredApplications.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
+                                        <Typography variant="body1" color="text.secondary">
+                                            No applications found
+                                        </Typography>
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                filteredApplications.map((application, index) => {
+                                    const statusColors = getStatusColor(application.status);
+                                    return (
+                                        <TableRow
+                                            key={application._id}
+                                            sx={{
+                                                backgroundColor: index % 2 === 0 ? 'white' : '#fafbfc',
+                                                '&:hover': { backgroundColor: '#f3f4f6' },
+                                            }}
+                                        >
+                                            <TableCell>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                    {application.applicant?.imageLink ? (
+                                                        <Avatar src={application.applicant.imageLink} sx={{ width: 40, height: 40 }} />
+                                                    ) : (
+                                                        <Avatar
+                                                            sx={{
+                                                                backgroundColor: '#2FA4A9',
+                                                                width: 40,
+                                                                height: 40,
+                                                                fontWeight: 600,
+                                                            }}
+                                                        >
+                                                            {application.applicantName?.charAt(0).toUpperCase()}
+                                                        </Avatar>
+                                                    )}
+                                                    <Typography sx={{ fontWeight: 500 }}>{application.applicantName}</Typography>
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell>{application.jobTitle}</TableCell>
+                                            <TableCell sx={{ color: 'text.secondary' }}>{application.experience}</TableCell>
+                                            <TableCell sx={{ color: 'text.secondary' }}>{application.currentLocation}</TableCell>
+                                            <TableCell sx={{ color: 'text.secondary' }}>{formatDate(application.createdAt)}</TableCell>
+                                            <TableCell>
+                                                <Chip
+                                                    label={application.status.charAt(0).toUpperCase() + application.status.slice(1)}
                                                     size="small"
-                                                    variant="outlined"
                                                     sx={{
-                                                        textTransform: 'none',
-                                                        minWidth: 'auto',
-                                                        borderColor: '#e5e7eb',
-                                                        color: 'text.secondary',
+                                                        backgroundColor: statusColors.bg,
+                                                        color: statusColors.color,
+                                                        fontWeight: 500,
+                                                        borderRadius: 2,
                                                     }}
-                                                >
-                                                    View Profile
-                                                </Button>
-                                                <Button
-                                                    size="small"
-                                                    variant="contained"
-                                                    sx={{
-                                                        textTransform: 'none',
-                                                        minWidth: 'auto',
-                                                        backgroundColor: 'primary.main',
-                                                    }}
-                                                >
-                                                    Contact
-                                                </Button>
-                                            </Box>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
+                                                />
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                                                    <Button
+                                                        size="small"
+                                                        variant="outlined"
+                                                        startIcon={<ViewIcon />}
+                                                        onClick={() => handleViewDetails(application)}
+                                                        sx={{
+                                                            textTransform: 'none',
+                                                            borderColor: '#e5e7eb',
+                                                            color: 'text.secondary',
+                                                        }}
+                                                    >
+                                                        View
+                                                    </Button>
+                                                    {application.status === 'pending' && (
+                                                        <>
+                                                            <Button
+                                                                size="small"
+                                                                variant="contained"
+                                                                onClick={() => handleStatusUpdate(application._id, 'shortlisted')}
+                                                                sx={{
+                                                                    textTransform: 'none',
+                                                                    backgroundColor: '#10b981',
+                                                                    '&:hover': { backgroundColor: '#059669' },
+                                                                }}
+                                                            >
+                                                                Shortlist
+                                                            </Button>
+                                                            <Button
+                                                                size="small"
+                                                                variant="outlined"
+                                                                onClick={() => handleStatusUpdate(application._id, 'rejected')}
+                                                                sx={{
+                                                                    textTransform: 'none',
+                                                                    borderColor: '#dc2626',
+                                                                    color: '#dc2626',
+                                                                    '&:hover': {
+                                                                        borderColor: '#b91c1c',
+                                                                        backgroundColor: '#fee2e2',
+                                                                    },
+                                                                }}
+                                                            >
+                                                                Reject
+                                                            </Button>
+                                                        </>
+                                                    )}
+                                                </Box>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })
+                            )}
                         </TableBody>
                     </Table>
                 </TableContainer>
             </Card>
+
+            {/* View Details Dialog */}
+            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
+                {selectedApplication && (
+                    <>
+                        <DialogTitle>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                    Application Details
+                                </Typography>
+                                <IconButton onClick={() => setDialogOpen(false)} size="small">
+                                    <CloseIcon />
+                                </IconButton>
+                            </Box>
+                        </DialogTitle>
+                        <DialogContent dividers>
+                            <Grid container spacing={3}>
+                                <Grid item xs={12}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                        {selectedApplication.applicant?.imageLink ? (
+                                            <Avatar src={selectedApplication.applicant.imageLink} sx={{ width: 60, height: 60 }} />
+                                        ) : (
+                                            <Avatar sx={{ width: 60, height: 60, backgroundColor: '#2FA4A9', fontSize: '1.5rem' }}>
+                                                {selectedApplication.applicantName?.charAt(0).toUpperCase()}
+                                            </Avatar>
+                                        )}
+                                        <Box>
+                                            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                                {selectedApplication.applicantName}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                {selectedApplication.applicantEmail}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </Grid>
+
+                                <Grid item xs={6}>
+                                    <Typography variant="caption" color="text.secondary">Position</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>{selectedApplication.jobTitle}</Typography>
+                                </Grid>
+
+                                <Grid item xs={6}>
+                                    <Typography variant="caption" color="text.secondary">Experience</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>{selectedApplication.experience}</Typography>
+                                </Grid>
+
+                                <Grid item xs={6}>
+                                    <Typography variant="caption" color="text.secondary">Current Location</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>{selectedApplication.currentLocation}</Typography>
+                                </Grid>
+
+                                <Grid item xs={6}>
+                                    <Typography variant="caption" color="text.secondary">Expected Salary</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                        ${selectedApplication.expectedSalary?.toLocaleString()}
+                                    </Typography>
+                                </Grid>
+
+                                {selectedApplication.coverLetter && (
+                                    <Grid item xs={12}>
+                                        <Typography variant="caption" color="text.secondary">Cover Letter</Typography>
+                                        <Typography variant="body2" sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>
+                                            {selectedApplication.coverLetter}
+                                        </Typography>
+                                    </Grid>
+                                )}
+
+                                <Grid item xs={12}>
+                                    <Button
+                                        variant="outlined"
+                                        startIcon={<DownloadIcon />}
+                                        onClick={() => handleDownloadCV(selectedApplication)}
+                                        fullWidth
+                                        sx={{
+                                            borderColor: '#2FA4A9',
+                                            color: '#2FA4A9',
+                                            '&:hover': {
+                                                borderColor: '#258A8E',
+                                                backgroundColor: '#F0F9FA',
+                                            },
+                                        }}
+                                    >
+                                        Download CV ({selectedApplication.cvFileName})
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </DialogContent>
+                        <DialogActions sx={{ p: 3 }}>
+                            {selectedApplication.status === 'pending' && (
+                                <>
+                                    <Button
+                                        variant="outlined"
+                                        onClick={() => {
+                                            handleStatusUpdate(selectedApplication._id, 'rejected');
+                                            setDialogOpen(false);
+                                        }}
+                                        sx={{
+                                            borderColor: '#dc2626',
+                                            color: '#dc2626',
+                                            '&:hover': {
+                                                borderColor: '#b91c1c',
+                                                backgroundColor: '#fee2e2',
+                                            },
+                                        }}
+                                    >
+                                        Reject
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        onClick={() => {
+                                            handleStatusUpdate(selectedApplication._id, 'shortlisted');
+                                            setDialogOpen(false);
+                                        }}
+                                        sx={{
+                                            backgroundColor: '#10b981',
+                                            '&:hover': { backgroundColor: '#059669' },
+                                        }}
+                                    >
+                                        Shortlist
+                                    </Button>
+                                </>
+                            )}
+                        </DialogActions>
+                    </>
+                )}
+            </Dialog>
         </Box>
     );
 }
