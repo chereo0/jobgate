@@ -227,7 +227,7 @@ export default function Topbar({ currentUser }) {
         </div>
       )}
 
-      <img className="h-12 w-auto object-contain cursor-pointer" src={LinkedinLogo} alt="JobGate Logo" onClick={() => goToRoute("/home")} />
+      <img className="h-20 w-auto object-contain cursor-pointer" src={LinkedinLogo} alt="JobGate Logo" onClick={() => goToRoute("/home")} />
 
       {isSearch ? (
         <SearchUsers

@@ -323,10 +323,11 @@ export default function ApplicationModal({ open, onClose, job, onSuccess }) {
                         variant="contained"
                         disabled={loading}
                         sx={{
-                            backgroundColor: '#2FA4A9',
+                            background: 'linear-gradient(135deg, #2FA4A9 0%, #5BC0BE 100%)',
                             px: 4,
+                            boxShadow: '0 4px 12px rgba(47, 164, 169, 0.3)',
                             '&:hover': {
-                                backgroundColor: '#258A8E',
+                                background: 'linear-gradient(135deg, #258A8E 0%, #4AABAD 100%)',
                             },
                         }}
                     >

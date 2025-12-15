@@ -22,4 +22,40 @@
   .linkedin-btn-outline {
     @apply bg-white text-gray-600 font-semibold rounded-full px-6 py-2 border border-gray-600 hover:bg-gray-100 transition-colors cursor-pointer;
   }
+
+  /* JobGate Primary Button - Gradient Style */
+  .jobgate-btn {
+    background: linear-gradient(135deg, #2FA4A9 0%, #5BC0BE 100%);
+    color: white;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 10px 24px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(47, 164, 169, 0.3);
+  }
+
+  .jobgate-btn:hover {
+    background: linear-gradient(135deg, #258A8E 0%, #4AABAD 100%);
+    box-shadow: 0 6px 16px rgba(47, 164, 169, 0.4);
+    transform: translateY(-1px);
+  }
+
+  /* JobGate Outlined Button */
+  .jobgate-btn-outline {
+    background: transparent;
+    color: #2FA4A9;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 10px 24px;
+    border: 2px solid #2FA4A9;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .jobgate-btn-outline:hover {
+    background: rgba(47, 164, 169, 0.1);
+    border-color: #258A8E;
+  }
 }
