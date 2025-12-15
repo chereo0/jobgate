@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 const { createNotification } = require("./notificationController");
 
 // Generate JWT Token
@@ -135,6 +136,11 @@ const loginUser = async (req, res) => {
 // @access  Private
 const getUserProfile = async (req, res) => {
     try {
+        // Validate that the user ID is a valid ObjectId
+        if (!req.user || !req.user._id || !mongoose.Types.ObjectId.isValid(req.user._id)) {
+            return res.status(400).json({ message: "Invalid user ID" });
+        }
+
         const user = await User.findById(req.user._id).select("-password");
 
         if (user) {

@@ -3,11 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import {
     AppBar,
     Toolbar,
-    TextField,
     IconButton,
     Avatar,
     Box,
-    InputAdornment,
     Menu,
     MenuItem,
     Typography,
@@ -20,7 +18,6 @@ import {
     Button,
 } from '@mui/material';
 import {
-    Search as SearchIcon,
     Notifications as NotificationsIcon,
     Settings as SettingsIcon,
     Logout as LogoutIcon,
@@ -142,30 +139,10 @@ export default function TopBar() {
             }}
         >
             <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
-                {/* Search Bar */}
-                <TextField
-                    placeholder="Search..."
-                    size="small"
-                    sx={{
-                        width: 300,
-                        '& .MuiOutlinedInput-root': {
-                            backgroundColor: '#F2F4F6',
-                            '&:hover fieldset': {
-                                borderColor: '#2FA4A9',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: '#2FA4A9',
-                            },
-                        },
-                    }}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon sx={{ color: '#7A7A7A' }} />
-                            </InputAdornment>
-                        ),
-                    }}
-                />
+                {/* Admin Dashboard Title */}
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#2FA4A9' }}>
+                    Admin Dashboard
+                </Typography>
 
                 {/* Right Side Icons */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

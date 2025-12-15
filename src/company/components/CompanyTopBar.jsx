@@ -3,18 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import {
     AppBar,
     Toolbar,
-    TextField,
     IconButton,
     Avatar,
     Box,
-    InputAdornment,
     Menu,
     MenuItem,
     Typography,
     Divider,
 } from '@mui/material';
 import {
-    Search as SearchIcon,
     Notifications as NotificationsIcon,
     Settings as SettingsIcon,
     Logout as LogoutIcon,
@@ -74,30 +71,10 @@ export default function CompanyTopBar() {
             }}
         >
             <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
-                <Box sx={{ flex: 1, maxWidth: 600, mx: 'auto' }}>
-                    <TextField
-                        fullWidth
-                        placeholder="Search candidates, jobs..."
-                        size="small"
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SearchIcon sx={{ color: 'text.secondary' }} />
-                                </InputAdornment>
-                            ),
-                            sx: {
-                                backgroundColor: '#f3f4f6',
-                                borderRadius: 2,
-                                '& .MuiOutlinedInput-notchedOutline': {
-                                    border: 'none',
-                                },
-                                '&:hover': {
-                                    backgroundColor: '#e5e7eb',
-                                },
-                            },
-                        }}
-                    />
-                </Box>
+                {/* Company Dashboard Title */}
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#2FA4A9' }}>
+                    Company Dashboard
+                </Typography>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <IconButton>
