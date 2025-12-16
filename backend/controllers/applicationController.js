@@ -183,7 +183,8 @@ const notifyApplicant = async (req, res) => {
     try {
         const application = await JobApplication.findById(req.params.id)
             .populate("job", "title")
-            .populate("company", "name");
+            .populate("company", "name")
+            .populate("applicant", "_id name email");
 
         if (!application) {
             return res.status(404).json({ message: "Application not found" });
@@ -222,11 +223,12 @@ const notifyApplicant = async (req, res) => {
         // Create in-app notification
         try {
             await Notification.create({
-                userId: application.applicant,
+                userId: application.applicant._id,
                 message: notificationMessage,
-                type: "application",
-                link: `/applications`,
+                type: "job_application",
+                applicationId: application._id,
             });
+            console.log("In-app notification created for user:", application.applicant._id);
         } catch (notifError) {
             console.error("Error creating in-app notification:", notifError.message);
             // Don't fail the request if notification creation fails
