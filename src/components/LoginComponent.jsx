@@ -43,11 +43,17 @@ export default function LoginComponent() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-['Inter']">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <img
-          className="mx-auto h-12 w-auto"
-          src={LinkedinLogo}
-          alt="LinkedIn"
-        />
+        <span
+          className="block mx-auto text-4xl font-bold text-center select-none"
+          style={{
+            background: 'linear-gradient(135deg, #0066CC 0%, #0099FF 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          JobGate
+        </span>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Sign in to your professional world
         </h2>
@@ -71,7 +77,7 @@ export default function LoginComponent() {
                   autoComplete="email"
                   required
                   placeholder="Ex: user@example.com"
-                  className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#0077b5] focus:border-transparent transition-all"
+                  className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#2FA4A9] focus:border-transparent transition-all"
                   onChange={(event) =>
                     setCredentials({ ...credentials, email: event.target.value })
                   }
@@ -94,7 +100,7 @@ export default function LoginComponent() {
                   autoComplete="current-password"
                   required
                   placeholder="Password"
-                  className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#0077b5] focus:border-transparent transition-all"
+                  className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#2FA4A9] focus:border-transparent transition-all"
                   onChange={(event) =>
                     setCredentials({ ...credentials, password: event.target.value })
                   }
@@ -108,7 +114,7 @@ export default function LoginComponent() {
             </div>
 
             <div className="text-xs text-gray-500">
-              <a href="#" className="text-[#0077b5] hover:underline">
+              <a href="#" className="text-[#2FA4A9] hover:underline">
                 Forgot password?
               </a>
             </div>
@@ -117,7 +123,7 @@ export default function LoginComponent() {
               <button
                 onClick={login}
                 disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-[#0077b5] hover:bg-[#006097] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0077b5] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-[#2FA4A9] hover:bg-[#258A8E] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2FA4A9] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Signing in..." : "Sign in"}
               </button>
@@ -139,7 +145,7 @@ export default function LoginComponent() {
             <div className="mt-6">
               <button
                 onClick={() => navigate("/register")}
-                className="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-full shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0077b5] transition-colors duration-200"
+                className="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-full shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2FA4A9] transition-colors duration-200"
               >
                 Join now
               </button>

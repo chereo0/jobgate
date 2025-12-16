@@ -227,7 +227,18 @@ export default function Topbar({ currentUser }) {
         </div>
       )}
 
-      <img className="h-20 w-auto object-contain cursor-pointer" src={LinkedinLogo} alt="JobGate Logo" onClick={() => goToRoute("/home")} />
+      <span
+        className="text-2xl font-bold cursor-pointer select-none"
+        style={{
+          background: 'linear-gradient(135deg, #0066CC 0%, #0099FF 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+        }}
+        onClick={() => goToRoute("/home")}
+      >
+        JobGate
+      </span>
 
       {isSearch ? (
         <SearchUsers

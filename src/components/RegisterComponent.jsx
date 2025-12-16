@@ -109,11 +109,17 @@ export default function RegisterComponent() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-['Inter']">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <img
-          className="mx-auto h-12 w-auto"
-          src={LinkedinLogo}
-          alt="LinkedIn"
-        />
+        <span
+          className="block mx-auto text-4xl font-bold text-center select-none"
+          style={{
+            background: 'linear-gradient(135deg, #0066CC 0%, #0099FF 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          JobGate
+        </span>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Make the most of your professional life
         </h2>
@@ -132,7 +138,7 @@ export default function RegisterComponent() {
                   type="button"
                   onClick={() => setCredentials({ ...credentials, role: "candidate" })}
                   className={`py-3 px-4 border-2 rounded-lg text-sm font-medium transition-all ${credentials.role === "candidate"
-                    ? "border-[#0077b5] bg-blue-50 text-[#0077b5]"
+                    ? "border-[#2FA4A9] bg-blue-50 text-[#2FA4A9]"
                     : "border-gray-300 text-gray-700 hover:border-gray-400"
                     }`}
                 >
@@ -142,7 +148,7 @@ export default function RegisterComponent() {
                   type="button"
                   onClick={() => setCredentials({ ...credentials, role: "company" })}
                   className={`py-3 px-4 border-2 rounded-lg text-sm font-medium transition-all ${credentials.role === "company"
-                    ? "border-[#0077b5] bg-blue-50 text-[#0077b5]"
+                    ? "border-[#2FA4A9] bg-blue-50 text-[#2FA4A9]"
                     : "border-gray-300 text-gray-700 hover:border-gray-400"
                     }`}
                 >
@@ -162,7 +168,7 @@ export default function RegisterComponent() {
                   type="text"
                   required
                   placeholder={credentials.role === "company" ? "e.g. Tech Corp Inc." : "e.g. John Doe"}
-                  className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#0077b5] focus:border-transparent transition-all"
+                  className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#2FA4A9] focus:border-transparent transition-all"
                   onChange={(event) =>
                     setCredentials({ ...credentials, name: event.target.value })
                   }
@@ -181,7 +187,7 @@ export default function RegisterComponent() {
                   type="email"
                   required
                   placeholder="Ex: user@example.com"
-                  className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#0077b5] focus:border-transparent transition-all"
+                  className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#2FA4A9] focus:border-transparent transition-all"
                   onChange={(event) =>
                     setCredentials({ ...credentials, email: event.target.value })
                   }
@@ -200,7 +206,7 @@ export default function RegisterComponent() {
                   type="password"
                   required
                   placeholder="Password"
-                  className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#0077b5] focus:border-transparent transition-all"
+                  className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#2FA4A9] focus:border-transparent transition-all"
                   onChange={(event) =>
                     setCredentials({ ...credentials, password: event.target.value })
                   }
@@ -220,7 +226,7 @@ export default function RegisterComponent() {
                     type="file"
                     accept=".pdf,.doc,.docx"
                     onChange={handleFileChange}
-                    className="file-input file-input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#0077b5]"
+                    className="file-input file-input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#2FA4A9]"
                   />
                   <p className="mt-1 text-xs text-gray-500">
                     Accepted formats: PDF, DOC, DOCX (Max 5MB)
@@ -247,7 +253,7 @@ export default function RegisterComponent() {
                       type="text"
                       required
                       placeholder="e.g. San Francisco, CA"
-                      className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#0077b5] focus:border-transparent transition-all"
+                      className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#2FA4A9] focus:border-transparent transition-all"
                       onChange={(event) =>
                         setCredentials({ ...credentials, location: event.target.value })
                       }
@@ -263,7 +269,7 @@ export default function RegisterComponent() {
                     <select
                       id="category"
                       required
-                      className="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#0077b5] focus:border-transparent transition-all"
+                      className="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#2FA4A9] focus:border-transparent transition-all"
                       onChange={(event) =>
                         setCredentials({ ...credentials, category: event.target.value })
                       }
@@ -288,7 +294,7 @@ export default function RegisterComponent() {
                       rows="3"
                       required
                       placeholder="Brief description of your company..."
-                      className="textarea textarea-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#0077b5] focus:border-transparent transition-all"
+                      className="textarea textarea-bordered w-full focus:outline-none focus:ring-2 focus:ring-[#2FA4A9] focus:border-transparent transition-all"
                       onChange={(event) =>
                         setCredentials({ ...credentials, about: event.target.value })
                       }
@@ -306,7 +312,7 @@ export default function RegisterComponent() {
               <button
                 onClick={register}
                 disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-[#0077b5] hover:bg-[#006097] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0077b5] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-[#2FA4A9] hover:bg-[#258A8E] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2FA4A9] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Creating Account..." : "Agree & Join"}
               </button>
@@ -328,7 +334,7 @@ export default function RegisterComponent() {
             <div className="mt-6">
               <button
                 onClick={() => navigate("/login")}
-                className="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-full shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0077b5] transition-colors duration-200"
+                className="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-full shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2FA4A9] transition-colors duration-200"
               >
                 Sign in
               </button>
