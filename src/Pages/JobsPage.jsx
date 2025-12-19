@@ -111,9 +111,34 @@ export default function JobsPage() {
                 <Typography variant="h4" sx={{ fontWeight: 700, color: '#2FA4A9', mb: 1 }}>
                     Browse Jobs
                 </Typography>
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
                     {totalJobs} job{totalJobs !== 1 ? 's' : ''} available
                 </Typography>
+
+                {/* Search Bar at Top */}
+                <Card sx={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)', borderRadius: 2 }}>
+                    <CardContent sx={{ py: 2 }}>
+                        <TextField
+                            fullWidth
+                            placeholder="Search jobs by title or company..."
+                            value={filters.search}
+                            onChange={(e) => handleFilterChange('search', e.target.value)}
+                            InputProps={{
+                                startAdornment: <SearchIcon sx={{ mr: 1, color: '#2FA4A9', fontSize: 24 }} />,
+                            }}
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    '&:hover fieldset': {
+                                        borderColor: '#2FA4A9',
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#2FA4A9',
+                                    },
+                                },
+                            }}
+                        />
+                    </CardContent>
+                </Card>
             </Box>
 
             <Grid container spacing={3}>
@@ -144,33 +169,6 @@ export default function JobsPage() {
                                         }}
                                     />
                                 )}
-                            </Box>
-
-                            {/* Search */}
-                            <Box sx={{ mb: 3 }}>
-                                <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', mb: 1, display: 'block' }}>
-                                    SEARCH
-                                </Typography>
-                                <TextField
-                                    fullWidth
-                                    size="small"
-                                    placeholder="Job title or company..."
-                                    value={filters.search}
-                                    onChange={(e) => handleFilterChange('search', e.target.value)}
-                                    InputProps={{
-                                        startAdornment: <SearchIcon sx={{ mr: 1, color: '#2FA4A9', fontSize: 20 }} />,
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            '&:hover fieldset': {
-                                                borderColor: '#2FA4A9',
-                                            },
-                                            '&.Mui-focused fieldset': {
-                                                borderColor: '#2FA4A9',
-                                            },
-                                        },
-                                    }}
-                                />
                             </Box>
 
                             {/* Location Filter */}

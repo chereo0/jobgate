@@ -48,4 +48,12 @@ const admin = (req, res, next) => {
     }
 };
 
-module.exports = { protect, admin };
+const adminOrCompany = (req, res, next) => {
+    if (req.user && (req.user.role === "admin" || req.user.role === "company")) {
+        next();
+    } else {
+        res.status(401).json({ message: "Not authorized. Only admin or company can perform this action." });
+    }
+};
+
+module.exports = { protect, admin, adminOrCompany };

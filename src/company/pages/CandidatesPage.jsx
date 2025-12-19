@@ -30,8 +30,9 @@ import {
     Visibility as ViewIcon,
     Close as CloseIcon,
     Download as DownloadIcon,
+    Notifications as NotifyIcon,
 } from '@mui/icons-material';
-import { getCompanyApplicationsAPI, updateApplicationStatusAPI } from '../../api/ApplicationAPI';
+import { getCompanyApplicationsAPI, updateApplicationStatusAPI, notifyApplicantAPI } from '../../api/ApplicationAPI';
 import { toast } from 'react-toastify';
 
 const getStatusColor = (status) => {
@@ -117,6 +118,17 @@ export default function CandidatesPage() {
         link.href = application.cv;
         link.download = application.cvFileName || `CV_${application.applicantName}.pdf`;
         link.click();
+    };
+
+    const handleNotify = async (applicationId) => {
+        try {
+            await notifyApplicantAPI(applicationId);
+            toast.success('Candidate notified successfully');
+            fetchApplications();
+        } catch (error) {
+            console.error('Error notifying candidate:', error);
+            toast.error(error.message || 'Failed to notify candidate');
+        }
     };
 
     const formatDate = (dateString) => {
@@ -358,6 +370,33 @@ export default function CandidatesPage() {
                                                                 Reject
                                                             </Button>
                                                         </>
+                                                    )}
+                                                    {/* Notify button for shortlisted/rejected applications */}
+                                                    {(application.status === 'shortlisted' || application.status === 'rejected') && !application.notified && (
+                                                        <Button
+                                                            size="small"
+                                                            variant="contained"
+                                                            startIcon={<NotifyIcon />}
+                                                            onClick={() => handleNotify(application._id)}
+                                                            sx={{
+                                                                textTransform: 'none',
+                                                                backgroundColor: '#2FA4A9',
+                                                                '&:hover': { backgroundColor: '#258A8E' },
+                                                            }}
+                                                        >
+                                                            Notify
+                                                        </Button>
+                                                    )}
+                                                    {application.notified && (
+                                                        <Chip
+                                                            label="Notified"
+                                                            size="small"
+                                                            sx={{
+                                                                backgroundColor: '#dbeafe',
+                                                                color: '#1d4ed8',
+                                                                fontWeight: 500,
+                                                            }}
+                                                        />
                                                     )}
                                                 </Box>
                                             </TableCell>

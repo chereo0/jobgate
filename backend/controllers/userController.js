@@ -359,6 +359,68 @@ const getFeaturedCompanies = async (req, res) => {
     }
 };
 
+// @desc    Admin create company
+// @route   POST /api/users/admin/create-company
+// @access  Private (Admin only)
+const adminCreateCompany = async (req, res) => {
+    try {
+        const { name, email, password, location, category, about, imageLink } = req.body;
+
+        // Validation
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: "Please provide name, email, and password" });
+        }
+
+        if (!location || !category || !about) {
+            return res.status(400).json({ message: "Location, category, and about are required for companies" });
+        }
+
+        // Check if user exists
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ message: "A user with this email already exists" });
+        }
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Generate unique userID
+        const userID = `company_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+        // Create company
+        const company = await User.create({
+            userID,
+            name,
+            email,
+            password: hashedPassword,
+            role: "company",
+            location,
+            category,
+            about,
+            imageLink: imageLink || undefined,
+        });
+
+        if (company) {
+            res.status(201).json({
+                _id: company._id,
+                name: company.name,
+                email: company.email,
+                role: company.role,
+                location: company.location,
+                category: company.category,
+                about: company.about,
+                message: "Company created successfully",
+            });
+        } else {
+            res.status(400).json({ message: "Failed to create company" });
+        }
+    } catch (error) {
+        console.error("Error creating company:", error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
@@ -371,4 +433,5 @@ module.exports = {
     getAllCompanies,
     getCompanyById,
     getFeaturedCompanies,
+    adminCreateCompany,
 };

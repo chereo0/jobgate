@@ -9,6 +9,7 @@ import UserManagementPage from './pages/UserManagementPage';
 import CompaniesPage from './pages/CompaniesPage';
 import JobApplicationsPage from './pages/JobApplicationsPage';
 import CompanyCategoriesPage from './pages/CompanyCategoriesPage';
+import AddCompanyPage from './pages/AddCompanyPage';
 
 export default function AdminApp() {
     return (
@@ -19,6 +20,7 @@ export default function AdminApp() {
                     <Route path="/" element={<OverviewPage />} />
                     <Route path="/users" element={<UserManagementPage />} />
                     <Route path="/companies" element={<CompaniesPage />} />
+                    <Route path="/add-company" element={<AddCompanyPage />} />
                     <Route path="/applications" element={<JobApplicationsPage />} />
                     <Route path="/categories" element={<CompanyCategoriesPage />} />
                 </Routes>
@@ -26,3 +28,4 @@ export default function AdminApp() {
         </ThemeProvider>
     );
 }
+

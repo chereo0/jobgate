@@ -12,6 +12,7 @@ const {
     getAllCompanies,
     getCompanyById,
     getFeaturedCompanies,
+    adminCreateCompany,
 } = require("../controllers/userController");
 const { protect, admin } = require("../middleware/authMiddleware");
 
@@ -43,6 +44,9 @@ router.route("/profile").get(protect, getUserProfile).put(protect, updateUserPro
 
 // Admin routes - Get all users
 router.get("/", protect, admin, getAllUsers);
+
+// Admin routes - Create company
+router.post("/admin/create-company", protect, admin, adminCreateCompany);
 
 // Admin routes - Company management
 router.get("/companies", protect, admin, getAllCompanies);

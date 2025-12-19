@@ -147,6 +147,24 @@ export const deleteUserById = async (userId) => {
   }
 };
 
+// Admin create company
+export const adminCreateCompanyAPI = async (companyData) => {
+  try {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.post(`${API_URL}/admin/create-company`, {
+      ...companyData,
+      role: 'company',
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 // Get all companies (public)
 export const getAllCompanies = async () => {
   try {

@@ -8,7 +8,7 @@ const {
     updateApplicationStatus,
     notifyApplicant,
 } = require("../controllers/applicationController");
-const { protect, admin } = require("../middleware/authMiddleware");
+const { protect, admin, adminOrCompany } = require("../middleware/authMiddleware");
 
 // Apply for job
 router.post("/jobs/:id/apply", protect, applyForJob);
@@ -21,7 +21,8 @@ router.get("/applications/user", protect, getUserApplications);
 // Update application status
 router.put("/applications/:id/status", protect, updateApplicationStatus);
 
-// Send notification
-router.post("/applications/:id/notify", protect, admin, notifyApplicant);
+// Send notification (admin or company)
+router.post("/applications/:id/notify", protect, adminOrCompany, notifyApplicant);
 
 module.exports = router;
+
